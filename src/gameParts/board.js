@@ -28,7 +28,7 @@ class Board {
 
 
     get board() {
-        return this.#board.slice();
+        return this.#board;
     };
 
 
