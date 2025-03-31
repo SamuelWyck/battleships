@@ -70,7 +70,7 @@ class Computer {
         }
     };
 
-
+    //need to test this
     #getNextHit() {
         let minRow = Infinity;
         let maxRow = -Infinity;
@@ -84,34 +84,55 @@ class Computer {
         }
 
         if (minCol === maxCol) {
-            //make this part a helper method
-            const row = minRow - 1;
-            const col = minCol;
-
-            const rowValid = 0 <= row && row < this.radar.board.length;
-            const colValid = 0 <= col && col < this.radar.board[0].length;
-            if (!rowValid || !colValid || this.radar.board[row][col] === this.radar.missSymbol) {
-                const otherRow = maxRow + 1;
-                const otherCol = minCol;
-                if (this.radar.board[otherRow][otherCol] !== this.radar.missSymbol) {
-                    return [otherRow, otherCol];
-                }
-            } else {
-                return [row, col];
+            const coord = this.#getVerticalHit(minRow, maxRow, minCol);
+            if (coord !== null) {
+                return coord;
             }
         } 
         
+        return this.#getHorizontalHit(minRow, minCol, maxCol);
+    };
+
+
+    #getVerticalHit(minRow, maxRow, minCol) {
+        const row = minRow - 1;
+        const col = minCol;
+
+        const rowValid = 0 <= row && row < this.radar.board.length;
+        const colValid = 0 <= col && col < this.radar.board[0].length;
+        if (!rowValid || !colValid || this.radar.board[row][col] === this.radar.missSymbol) {
+            const otherRow = maxRow + 1;
+
+            const otherRowValid = 0 <= otherRow && otherRow < this.radar.board.length;
+            if (otherRowValid && this.radar.board[otherRow][col] !== this.radar.missSymbol) {
+                return [otherRow, col];
+            } else {
+                return null;
+            }
+        }
+
+        return [row, col];
+    };
+
+
+    #getHorizontalHit(minRow, minCol, maxCol) {
         const row = minRow;
         const col = minCol - 1;
 
         const rowValid = 0 <= row && row < this.radar.board.length;
         const colValid = 0 <= col && col < this.radar.board[0].length;
         if (!rowValid || !colValid || this.radar.board[row][col] === this.radar.missSymbol) {
-            return [minRow, maxCol + 1];
+            const otherCol = maxCol + 1;
+
+            const otherColValid = 0 <= otherCol && otherCol < this.radar.board[0].length;
+            if (otherColValid && this.radar.board[row][otherCol] !== this.radar.missSymbol) {
+                return [row, otherCol];
+            } else {
+                return null;
+            }
         }
 
         return [row, col];
-        //need to refactor and fix this method
     };
 
 
