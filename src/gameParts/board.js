@@ -6,6 +6,7 @@ class Board {
     #board = null;
     #ships = null;
     #maxShipCapacity = null;
+    #attackedPositions = null;
 
     constructor() {
         this.#board = [
@@ -22,6 +23,7 @@ class Board {
         ];
         this.#ships = [];
         this.#maxShipCapacity = 5;
+        this.#attackedPositions = new Set();
     };
 
 
@@ -81,7 +83,31 @@ class Board {
 
         this.#ships.push(ship);
         return true;
-    }; 
+    };
+
+
+    receiveAttack(row, col) {
+        const rowValid = 0 <= row && row < this.#board.length;
+        const colValid = 0 <= col && col < this.#board[0].length;
+        if (!rowValid || !colValid) {
+            return null;
+        }
+        const key = JSON.stringify([row, col]);
+        if (this.#attackedPositions.has(key)) {
+            return null;
+        }
+
+        this.#attackedPositions.add(key);
+        const position = this.#board[row][col];
+        if (typeof position === "number") {
+            this.#board[row][col] = 1;
+            return false;
+        }
+
+        const ship = position;
+        ship.hit();
+        return true;
+    };
 };
 
 
