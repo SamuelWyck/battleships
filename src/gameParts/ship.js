@@ -9,7 +9,9 @@ class Ship {
 
 
     hit() {
-        this.hits += 1;
+        if (this.hits < this.length) {
+            this.hits += 1;
+        }
     };
 
 
