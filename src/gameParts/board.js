@@ -102,6 +102,19 @@ class Board {
         ship.hit();
         return true;
     };
+
+
+    allShipsSunk() {
+        if (this.#ships.length === 0) {
+            return false;
+        }
+        for (let ship of this.#ships) {
+            if (!ship.isSunk()) {
+                return false;
+            }
+        }
+        return true;
+    };
 };
 
 
