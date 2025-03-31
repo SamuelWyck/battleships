@@ -54,6 +54,23 @@ class Board {
         if (!finalRowValid || !finalColValid) {
             return false;
         }
+        return this.#isClearSpace(length, row, col, horizontal);
+    };
+
+
+    #isClearSpace(length, row, col, horizontal) {
+        for (let i = 0; i < length; i += 1) {
+            const pos = this.#board[row][col];
+            if (typeof pos !== "number") {
+                return false;
+            }
+            
+            if (horizontal) {
+                col += 1;
+            } else {
+                row += 1;
+            }
+        }
         return true;
     };
 
