@@ -19,6 +19,7 @@ class Radar {
         ];
         this.hitSymbol = 1;
         this.missSymbol = -1;
+        this.emptySymbol = 0;
     };
 
 
