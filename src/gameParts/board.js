@@ -94,7 +94,7 @@ class Board {
         this.#attackedPositions.add(key);
         const position = this.#board[row][col];
         if (typeof position === "number") {
-            this.#board[row][col] = 1;
+            this.#board[row][col] = -1;
             return false;
         }
 
