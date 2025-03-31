@@ -7,6 +7,7 @@ class Board {
     #ships = null;
     #maxShipCapacity = null;
     #attackedPositions = null;
+    #missSymbol = null;
 
     constructor() {
         this.#board = [
@@ -24,6 +25,7 @@ class Board {
         this.#ships = [];
         this.#maxShipCapacity = 5;
         this.#attackedPositions = new Set();
+        this.#missSymbol = -1;
     };
 
 
@@ -94,7 +96,7 @@ class Board {
         this.#attackedPositions.add(key);
         const position = this.#board[row][col];
         if (typeof position === "number") {
-            this.#board[row][col] = -1;
+            this.#board[row][col] = this.#missSymbol;
             return false;
         }
 
