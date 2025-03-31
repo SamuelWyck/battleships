@@ -147,6 +147,7 @@ class Board {
         const ship = this.#board[row][col];
         this.#removeShipFromList(ship);
         this.#removeShipRecursive(ship, row, col, new Set());
+        return ship;
     };
 
 
