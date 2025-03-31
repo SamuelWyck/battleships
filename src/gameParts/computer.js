@@ -84,6 +84,7 @@ class Computer {
         }
 
         if (minCol === maxCol) {
+            //make this part a helper method
             const row = minRow - 1;
             const col = minCol;
 
