@@ -67,12 +67,6 @@ class Board {
         const ship = new Ship(length);
 
         for (let i = 0; i < length; i += 1) {
-            const rowValid = 0 <= row && row < this.#board.length;
-            const colValid = 0 <= col && col < this.#board[0].length;
-            if (!rowValid || !colValid) {
-                return false;
-            }
-
             this.#board[row][col] = ship;
             if (horizontal) {
                 col += 1;
