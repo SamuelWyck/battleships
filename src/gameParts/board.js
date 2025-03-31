@@ -8,6 +8,7 @@ class Board {
     #maxShipCapacity = null;
     #attackedPositions = null;
     #missSymbol = null;
+    #emptySymbol = null;
 
     constructor() {
         this.#board = [
@@ -26,6 +27,7 @@ class Board {
         this.#maxShipCapacity = 5;
         this.#attackedPositions = new Set();
         this.#missSymbol = -1;
+        this.#emptySymbol = 0;
     };
 
 
@@ -64,7 +66,7 @@ class Board {
             if (typeof pos !== "number") {
                 return false;
             }
-            
+
             if (horizontal) {
                 col += 1;
             } else {
@@ -133,6 +135,62 @@ class Board {
             }
         }
         return true;
+    };
+
+
+    removeShip(row, col) {
+        const rowValid = 0 <= row && row < this.#board.length;
+        const colValid = 0 <= col && col < this.#board[0].length;
+        if (!rowValid || !colValid) {
+            return;
+        }
+        const ship = this.#board[row][col];
+        this.#removeShipFromList(ship);
+        this.#removeShipRecursive(ship, row, col, new Set());
+    };
+
+
+    #removeShipFromList(ship) {
+        const newArray = [];
+        for (let oldShip of this.#ships) {
+            if (oldShip !== ship) {
+                newArray.push(oldShip);
+            }
+        }
+        this.#ships = newArray;
+    };
+
+
+    #removeShipRecursive(ship, row, col, visited) {
+        const rowValid = 0 <= row && row < this.#board.length;
+        const colValid = 0 <= col && col < this.#board[0].length;
+        if (!rowValid || !colValid) {
+            return;
+        }
+        const key = JSON.stringify([row, col]);
+        if (visited.has(key)) {
+            return;
+        }
+        if (this.#board[row][col] === this.#emptySymbol) {
+            return;
+        }
+        if (this.#board[row][col] !== ship) {
+            return;
+        }
+
+        visited.add(key);
+        this.#board[row][col] = this.#emptySymbol;
+
+        const neigbors = [
+            [row - 1, col], [row + 1, col],
+            [row, col - 1], [row, col + 1],
+        ];
+
+        for (let neighbor of neigbors) {
+            const nr = neighbor[0];
+            const nc = neighbor[1];
+            this.#removeShipRecursive(ship, nr, nc, visited);
+        }
     };
 };
 
