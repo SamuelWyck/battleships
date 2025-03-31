@@ -17,3 +17,6 @@ class Ship {
         return this.hits >= this.length;
     };
 };
+
+
+export default Ship;
