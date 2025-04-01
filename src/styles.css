@@ -16,3 +16,65 @@ html {
     font-family: "roboto", sans-serif;
     font-size: 16px;
 }
+
+header {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    padding: 0 .5rem;
+    background-color: #7E8D85;
+    padding-bottom: .05rem;
+}
+
+header span {
+    font-weight: bold;
+    letter-spacing: .06rem;
+}
+
+.branding {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.brand {
+    font-size: 1.5rem;
+    font-weight: bold;
+    letter-spacing: .05rem;
+    position: relative;
+    top: -1px;
+}
+
+.logo {
+    min-width: 50px;
+    position: relative;
+    top: 2px;
+}
+
+nav {
+    display: flex;
+    align-items: center;
+}
+
+.new-game-btn {
+    margin-right: 1.5rem;
+}
+
+.computer-choice-btn {
+    margin: 0 1rem;
+}
+
+header button {
+    background-color: inherit;
+    color: #A2E3C4;
+    border: none;
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 0 .5rem;
+}
+
+header button:hover, .choice-selected {
+    text-decoration: underline;
+    color: #c1e3a2;
+}
