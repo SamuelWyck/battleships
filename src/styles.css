@@ -86,3 +86,53 @@ header button:hover, .choice-selected {
     display: grid;
     grid-template-rows: min-content 1fr min-content;
 }
+
+.game-main {
+    /* display: grid;
+    grid-template-columns: 2fr 3fr 3fr; */
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 2rem;
+    margin: 3rem 2rem 2rem 2rem;
+}
+
+.board {
+    display: grid;
+    grid-template-columns: repeat(11, min-content);
+    grid-template-rows: repeat(11, min-content);
+    border: 1px solid #7E8D85;
+    max-width: fit-content;
+    background-image: url("./images/ocean.jpg");
+    background-color: rgb(18, 180, 180);
+}
+
+.board > div {
+    width: 50px;
+    height: 50px;
+    border: 1px solid #7E8D85;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #c1e3a2;
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+.board-cell-marker {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    z-index: 1;
+    background-color: none;
+}
+
+div.board-cell-marker.hit {
+    background-color: red;
+    border: 2px solid rgb(219, 1, 1);
+}
+
+div.board-cell-marker.miss {
+    background-color: white;
+    border: 2px solid rgb(206, 206, 206);
+}
