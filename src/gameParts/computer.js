@@ -105,13 +105,13 @@ class Computer {
 
             const otherRowValid = 0 <= otherRow && otherRow < this.radar.board.length;
             if (otherRowValid && this.radar.board[otherRow][col] !== this.radar.missSymbol) {
-                return [otherRow, col];
+                return {"row": otherRow, "col": col};
             } else {
                 return null;
             }
         }
 
-        return [row, col];
+        return {"row": row, "col": col};
     };
 
 
@@ -126,13 +126,13 @@ class Computer {
 
             const otherColValid = 0 <= otherCol && otherCol < this.radar.board[0].length;
             if (otherColValid && this.radar.board[row][otherCol] !== this.radar.missSymbol) {
-                return [row, otherCol];
+                return {"row": row, "col": otherCol};
             } else {
                 return null;
             }
         }
 
-        return [row, col];
+        return {"row": row, "col": col};
     };
 
 
