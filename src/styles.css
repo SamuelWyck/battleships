@@ -151,3 +151,37 @@ div.board-cell-marker.miss, div.radar-cell-marker.miss {
     background-color: white;
     border: 2px solid rgb(206, 206, 206);
 }
+
+.ship {
+    width: 50px;
+    border: 1px solid black;
+}
+
+.battleship, .carrier, .submarine, .destroyer, .patrol-boat {
+    height: 200px;
+    background-image: url("./images/battleship.png");
+    background-color: #7E8D85;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+}
+
+.carrier {
+    height: 250px;
+    background-image: url("./images/carrier.png");
+}
+
+.submarine {
+    height: 150px;
+    background-image: url("./images/submarine.png");
+}
+
+.destroyer {
+    height: 150px;
+    background-image: url("./images/destroyer.png");
+}
+
+.patrol-boat {
+    height: 100px;
+    background-image: url("./images/patrolBoat.png");
+}
