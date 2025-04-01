@@ -29,6 +29,7 @@ header {
 header span {
     font-weight: bold;
     letter-spacing: .06rem;
+    text-align: center;
 }
 
 .branding {
@@ -72,9 +73,16 @@ header button {
     font-weight: bold;
     cursor: pointer;
     padding: 0 .5rem;
+    text-align: center;
 }
 
 header button:hover, .choice-selected {
     text-decoration: underline;
     color: #c1e3a2;
+}
+
+.main {
+    min-height: 100vh;
+    display: grid;
+    grid-template-rows: min-content 1fr min-content;
 }
