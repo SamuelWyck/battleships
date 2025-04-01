@@ -2,8 +2,9 @@
 
 class BoardInterface {
 
-    constructor(boardClassName, coordCellClassName, cellClassName, markerClassName) {
-        this.containerDiv = document.querySelector(".board-container");
+    constructor(parent, boardClassName, coordCellClassName, cellClassName, markerClassName) {
+        this.containerDiv = parent;
+        this.board = this.#createElement("div", boardClassName);
         this.width = 11;
         this.height = 11;
         this.letterCoords = [
@@ -31,8 +32,6 @@ class BoardInterface {
 
 
     createBoard() {
-        const board = this.#createElement("div", "board");
-
         let letterIdx = 0;
         let numberIdx = 0;
         for (let i = 0; i < this.width * this.height; i += 1) {
@@ -40,22 +39,22 @@ class BoardInterface {
             const col = i % this.width - 1;
 
             if (i === 0) {
-                board.appendChild(this.#createCoordCell("", row, col));
+                this.board.appendChild(this.#createCoordCell("", row, col));
             } else if (i < this.width) {
                 const letter = this.letterCoords[letterIdx];
-                board.appendChild(this.#createCoordCell(letter));
+                this.board.appendChild(this.#createCoordCell(letter));
                 letterIdx += 1;
             } else if (i % this.width === 0 && i / this.width < this.height) {
                 const number = this.numberCoords[numberIdx];
-                board.appendChild(this.#createCoordCell(number));
+                this.board.appendChild(this.#createCoordCell(number));
                 numberIdx += 1;
             } else {
-                board.appendChild(this.#createCell(row, col));
+                this.board.appendChild(this.#createCell(row, col));
             }
         }
 
         this.containerDiv.innerHTML = "";
-        this.containerDiv.appendChild(board);
+        this.containerDiv.appendChild(this.board);
     };
 
 
