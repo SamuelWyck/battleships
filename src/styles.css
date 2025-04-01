@@ -93,6 +93,7 @@ header button:hover, .choice-selected {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
+    align-items: center;
     gap: 2rem;
     margin: 3rem 2rem 2rem 2rem;
 }
@@ -196,4 +197,5 @@ div.board-cell-marker.miss, div.radar-cell-marker.miss {
     background-color: #c1e3a2;
     padding: 1rem;
     border: 1px solid black;
+    align-items: center;
 }
