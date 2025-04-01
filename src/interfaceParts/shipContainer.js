@@ -3,7 +3,8 @@
 class ShipInterface {
 
     constructor(parent) {
-        this.container = document.createElement("div", "ship-container");
+        this.container = document.createElement("div");
+        this.container.classList.add("ship-container")
         this.parentDiv = parent;
         this.ships = [
             {"class": "carrier", "length": 5},
