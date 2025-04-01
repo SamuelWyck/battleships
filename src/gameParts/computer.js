@@ -70,7 +70,7 @@ class Computer {
         }
     };
 
-    //need to test this
+
     #getNextHit() {
         let minRow = Infinity;
         let maxRow = -Infinity;
@@ -83,14 +83,26 @@ class Computer {
             maxCol = Math.max(prevHit.col, maxCol);
         }
 
-        if (minCol === maxCol) {
-            const coord = this.#getVerticalHit(minRow, maxRow, minCol);
-            if (coord !== null) {
-                return coord;
+        const orderChoice = this.#randInt(0, 1);
+
+        if (orderChoice === 0) {
+            if (minCol === maxCol) {
+                const coord = this.#getVerticalHit(minRow, maxRow, minCol);
+                if (coord !== null) {
+                    return coord;
+                }
+            } 
+            return this.#getHorizontalHit(minRow, minCol, maxCol);
+
+        } else {
+            if (minRow === maxRow) {
+                const coord = this.#getHorizontalHit(minRow, minCol, maxCol);
+                if (coord !== null) {
+                    return coord;
+                }
             }
-        } 
-        
-        return this.#getHorizontalHit(minRow, minCol, maxCol);
+            return this.#getVerticalHit(minRow, maxRow, minCol);
+        }
     };
 
 
