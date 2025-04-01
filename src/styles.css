@@ -97,7 +97,7 @@ header button:hover, .choice-selected {
     margin: 3rem 2rem 2rem 2rem;
 }
 
-.board {
+.board, .radar {
     display: grid;
     grid-template-columns: repeat(11, min-content);
     grid-template-rows: repeat(11, min-content);
@@ -107,7 +107,17 @@ header button:hover, .choice-selected {
     background-color: rgb(18, 180, 180);
 }
 
-.board > div {
+.radar {
+    background-image: url("./images/radar.png");
+    background-size: 90%;
+    background-repeat: no-repeat;
+    background-position: right bottom 12%;
+    background-color: black;
+    /* background-image: url("./images/radar2.jpg");
+    background-size: cover; */
+}
+
+.board > div, .radar > div {
     width: 50px;
     height: 50px;
     border: 1px solid #7E8D85;
@@ -119,7 +129,12 @@ header button:hover, .choice-selected {
     font-size: 1.5rem;
 }
 
-.board-cell-marker {
+.radar > div {
+    /* border: 1px solid black; */
+    color: #c0ff85;
+}
+
+.board-cell-marker, .radar-cell-marker {
     width: 25px;
     height: 25px;
     border-radius: 50%;
@@ -127,12 +142,12 @@ header button:hover, .choice-selected {
     background-color: none;
 }
 
-div.board-cell-marker.hit {
+div.board-cell-marker.hit, div.radar-cell-marker.hit {
     background-color: red;
     border: 2px solid rgb(219, 1, 1);
 }
 
-div.board-cell-marker.miss {
+div.board-cell-marker.miss, div.radar-cell-marker.miss {
     background-color: white;
     border: 2px solid rgb(206, 206, 206);
 }
