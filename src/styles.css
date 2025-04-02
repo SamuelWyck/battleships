@@ -111,14 +111,17 @@ header button:hover, .choice-selected {
     background-repeat: no-repeat;
     background-position: right bottom 12%;
     background-color: black;
-    /* background-image: url("./images/radar2.jpg");
-    background-size: cover; */
 }
 
 .board > div, .radar > div {
     width: 50px;
     height: 50px;
     border: 1px solid #7E8D85;
+    display: flex;
+    position: relative;
+}
+
+.board-coord-cell, .radar-coord-cell {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -127,8 +130,7 @@ header button:hover, .choice-selected {
     font-size: 1.5rem;
 }
 
-.radar > div {
-    /* border: 1px solid black; */
+.radar-coord-cell {
     color: #c0ff85;
 }
 
@@ -136,28 +138,37 @@ header button:hover, .choice-selected {
     width: 25px;
     height: 25px;
     border-radius: 50%;
-    z-index: 1;
+    z-index: 2;
     background-color: none;
+    position: absolute;
+    top: 50%;
+    right: 50%;
+    transform: translate(50%, -50%);
+    display: none;
 }
 
 div.board-cell-marker.hit, div.radar-cell-marker.hit {
     background-color: red;
     border: 2px solid rgb(219, 1, 1);
+    position: absolute;
+    display: block;
 }
 
 div.board-cell-marker.miss, div.radar-cell-marker.miss {
     background-color: white;
     border: 2px solid rgb(206, 206, 206);
+    position: absolute;
+    display: block;
 }
 
 .ship {
     width: 50px;
-    border: 1px solid black;
-    background-color: #7E8D85;
+    background-color: none;
     background-repeat: no-repeat;
     background-position: center;
     background-size: contain;
     cursor: pointer;
+    z-index: 1;
 }
 
 .battleship {
@@ -168,6 +179,7 @@ div.board-cell-marker.miss, div.radar-cell-marker.miss {
 .carrier {
     height: 250px;
     background-image: url("./images/carrier.png");
+    background-size: 120% 100%;
 }
 
 .submarine {
@@ -185,12 +197,40 @@ div.board-cell-marker.miss, div.radar-cell-marker.miss {
     background-image: url("./images/patrolBoat.png");
 }
 
-.ship.horizontal {
-    transform: rotate(-90deg);
+.horizontal {
+    flex-shrink: 0;
+    height: 50px;
+}
+
+.horizontal.carrier {
+    width: 250px;
+    background-image: url("./images/carrier-rot.png");
+    background-size: 100% 120%;
+}
+
+.horizontal.battleship {
+    width: 200px;
+    background-image: url("./images/battleship-rot.png");
+}
+
+.horizontal.destroyer {
+    width: 150px;
+    background-image: url("./images/destroyer-rot.png");
+}
+
+.horizontal.submarine {
+    width: 150px;
+    background-image: url("./images/submarine-rot.png");
+}
+
+.horizontal.patrol-boat {
+    width: 100px;
+    background-image: url("./images/patrolBoat-rot.png");
 }
 
 .ship-container {
     width: 292px;
+    height: 292px;
     display: grid;
     grid-template-columns: repeat(5, min-content);
     align-items: center;
