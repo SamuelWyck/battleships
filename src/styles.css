@@ -156,15 +156,16 @@ div.board-cell-marker.miss, div.radar-cell-marker.miss {
 .ship {
     width: 50px;
     border: 1px solid black;
-}
-
-.battleship, .carrier, .submarine, .destroyer, .patrol-boat {
-    height: 200px;
-    background-image: url("./images/battleship.png");
     background-color: #7E8D85;
     background-repeat: no-repeat;
     background-position: center;
     background-size: contain;
+    cursor: pointer;
+}
+
+.battleship {
+    height: 200px;
+    background-image: url("./images/battleship.png");
 }
 
 .carrier {
