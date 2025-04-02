@@ -82,7 +82,7 @@ const game = (function() {
         }
     };
 
-
+    //might remove this
     function getShipFrontTarget(ship, event) {
         const rect = ship.getBoundingClientRect();
         let frontX = (ship.classList.contains("horizontal")) ? event.clientX - (event.clientX - rect.left): event.clientX;
