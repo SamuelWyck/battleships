@@ -85,6 +85,8 @@ header button:hover, .choice-selected {
     min-height: 100vh;
     display: grid;
     grid-template-rows: min-content 1fr min-content;
+    background-color: #034078;
+    background-image: radial-gradient(black 50%, gray);
 }
 
 .game-main {
@@ -193,10 +195,12 @@ div.board-cell-marker.miss, div.radar-cell-marker.miss {
 }
 
 .ship-container {
+    min-width: 292px;
     display: grid;
     grid-template-columns: repeat(5, min-content);
-    background-color: #c1e3a2;
-    padding: 1rem;
-    border: 1px solid black;
     align-items: center;
+    background-color: #034078;
+    background-image: radial-gradient(#7E8D85 30%, black);
+    border: 5px inset black;
+    padding: 1rem;
 }
