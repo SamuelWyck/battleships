@@ -31,6 +31,7 @@ class ShipInterface {
         const socketDiv = document.createElement("div");
         socketDiv.classList.add("socket");
         shipDiv.classList.add(ship.class);
+        shipDiv.id = ship.class;
         shipDiv.classList.add("ship");
         shipDiv.dataset.length = ship.length;
         shipDiv.setAttribute("draggable", true);
