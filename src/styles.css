@@ -30,6 +30,7 @@ header span {
     font-weight: bold;
     letter-spacing: .06rem;
     text-align: center;
+    font-size: 1.2rem;
 }
 
 .branding {
@@ -55,10 +56,6 @@ header span {
 nav {
     display: flex;
     align-items: center;
-}
-
-.new-game-btn {
-    margin-right: 1.5rem;
 }
 
 .computer-choice-btn {
@@ -90,13 +87,11 @@ header button:hover, .choice-selected {
 }
 
 .game-main {
-    /* display: grid;
-    grid-template-columns: 2fr 3fr 3fr; */
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
-    gap: 2rem;
+    gap: 4rem;
     margin: 3rem 2rem 2rem 2rem;
 }
 
@@ -195,12 +190,53 @@ div.board-cell-marker.miss, div.radar-cell-marker.miss {
 }
 
 .ship-container {
-    min-width: 292px;
+    width: 292px;
     display: grid;
     grid-template-columns: repeat(5, min-content);
     align-items: center;
     background-color: #034078;
     background-image: radial-gradient(#7E8D85 30%, black);
     border: 5px inset black;
+    border-radius: 10px;
     padding: 1rem;
+}
+
+.interface button {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: #c1e3a2;
+    background-color: #7E8D85;
+    padding: .3rem .6rem;
+    border: 2px inset #7E8D85;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.interface button:hover {
+    background-image: radial-gradient(black, #7E8D85);
+    color: #c0ff85;
+}
+
+.interface {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+}
+
+.game-btns {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.game-btns > div {
+    display: flex;
+    gap: 1.3rem;
+    flex-wrap: wrap;
+}
+
+.hidden {
+    display: none;
 }
