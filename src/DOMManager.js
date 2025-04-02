@@ -48,6 +48,9 @@ class DOMManager {
         this.ocean.board.addEventListener("dragover", function(event) {
             event.preventDefault();
         });
+        this.shipsContainer.container.addEventListener("dragover", function(event) {
+            event.preventDefault();
+        });
     };
 
 
@@ -55,18 +58,30 @@ class DOMManager {
         this.ocean.board.addEventListener("drop", function(event) {
             callback(event);
         });
+        this.shipsContainer.container.addEventListener("drop", function(event) {
+            callback(event);
+        });
     };
 
 
     shipDragEvent(callback) {
-        this.shipsContainer.addEventListener("drag", function(event) {
+        this.shipsContainer.container.addEventListener("dragstart", function(event) {
             if (event.target.matches(".ship")) {
-                callback(event.target);
+                callback(event);
             }
         });
-        this.ocean.board.addEventListener("drag", function(event) {
+        this.ocean.board.addEventListener("dragstart", function(event) {
             if (event.target.matches(".ship")) {
-                callback(event.target);
+                callback(event);
+            }
+        });
+    };
+
+
+    shipRotateEvent(callback) {
+        document.addEventListener("dblclick", function(event) {
+            if (event.target.matches(".ship") && !event.target.parentNode.matches(".ship-container")) {
+                callback(event);
             }
         });
     };
