@@ -1,0 +1,242 @@
+@font-face {
+    font-family: 'roboto';
+    src: url('./fonts/roboto.woff2') format('woff2'),
+        url('./fonts/roboto.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-family: "roboto", sans-serif;
+    font-size: 16px;
+}
+
+header {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    padding: 0 .5rem;
+    background-color: #7E8D85;
+    padding-bottom: .05rem;
+}
+
+header span {
+    font-weight: bold;
+    letter-spacing: .06rem;
+    text-align: center;
+    font-size: 1.2rem;
+}
+
+.branding {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.brand {
+    font-size: 1.5rem;
+    font-weight: bold;
+    letter-spacing: .05rem;
+    position: relative;
+    top: -1px;
+}
+
+.logo {
+    min-width: 50px;
+    position: relative;
+    top: 2px;
+}
+
+nav {
+    display: flex;
+    align-items: center;
+}
+
+.computer-choice-btn {
+    margin: 0 1rem;
+}
+
+header button {
+    background-color: inherit;
+    color: #A2E3C4;
+    border: none;
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 0 .5rem;
+    text-align: center;
+}
+
+header button:hover, .choice-selected {
+    text-decoration: underline;
+    color: #c1e3a2;
+}
+
+.main {
+    min-height: 100vh;
+    display: grid;
+    grid-template-rows: min-content 1fr min-content;
+    background-color: #034078;
+    background-image: radial-gradient(black 50%, gray);
+}
+
+.game-main {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 4rem;
+    margin: 3rem 2rem 2rem 2rem;
+}
+
+.board, .radar {
+    display: grid;
+    grid-template-columns: repeat(11, min-content);
+    grid-template-rows: repeat(11, min-content);
+    border: 1px solid #7E8D85;
+    max-width: fit-content;
+    background-image: url("./images/ocean.jpg");
+    background-color: rgb(18, 180, 180);
+}
+
+.radar {
+    background-image: url("./images/radar.png");
+    background-size: 90%;
+    background-repeat: no-repeat;
+    background-position: right bottom 12%;
+    background-color: black;
+    /* background-image: url("./images/radar2.jpg");
+    background-size: cover; */
+}
+
+.board > div, .radar > div {
+    width: 50px;
+    height: 50px;
+    border: 1px solid #7E8D85;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #c1e3a2;
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+.radar > div {
+    /* border: 1px solid black; */
+    color: #c0ff85;
+}
+
+.board-cell-marker, .radar-cell-marker {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    z-index: 1;
+    background-color: none;
+}
+
+div.board-cell-marker.hit, div.radar-cell-marker.hit {
+    background-color: red;
+    border: 2px solid rgb(219, 1, 1);
+}
+
+div.board-cell-marker.miss, div.radar-cell-marker.miss {
+    background-color: white;
+    border: 2px solid rgb(206, 206, 206);
+}
+
+.ship {
+    width: 50px;
+    border: 1px solid black;
+    background-color: #7E8D85;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    cursor: pointer;
+}
+
+.battleship {
+    height: 200px;
+    background-image: url("./images/battleship.png");
+}
+
+.carrier {
+    height: 250px;
+    background-image: url("./images/carrier.png");
+}
+
+.submarine {
+    height: 150px;
+    background-image: url("./images/submarine.png");
+}
+
+.destroyer {
+    height: 150px;
+    background-image: url("./images/destroyer.png");
+}
+
+.patrol-boat {
+    height: 100px;
+    background-image: url("./images/patrolBoat.png");
+}
+
+.ship.horizontal {
+    transform: rotate(-90deg);
+}
+
+.ship-container {
+    width: 292px;
+    display: grid;
+    grid-template-columns: repeat(5, min-content);
+    align-items: center;
+    background-color: #034078;
+    background-image: radial-gradient(#7E8D85 30%, black);
+    border: 5px inset black;
+    border-radius: 10px;
+    padding: 1rem;
+}
+
+.interface button {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: #c1e3a2;
+    background-color: #7E8D85;
+    padding: .3rem .6rem;
+    border: 2px inset #7E8D85;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.interface button:hover {
+    background-image: radial-gradient(black, #7E8D85);
+    color: #c0ff85;
+}
+
+.interface {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+}
+
+.game-btns {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.game-btns > div {
+    display: flex;
+    gap: 1.3rem;
+    flex-wrap: wrap;
+}
+
+.hidden {
+    display: none;
+}

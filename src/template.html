@@ -3,8 +3,39 @@
 <head>
     <title>BattleShips</title>
     <meta charset="utf-8">
+    <link rel="icon" type="image/svg" href="./images/cruiser.svg">
 </head>
 <body>
-    
+<div class="main">
+    <header>
+        <div class="branding">
+            <div class="logo"><img src="./images/cruiser.svg" alt="ship" class="logo-img"></div>
+            <div class="brand">BattleShips</div>
+        </div>
+        <nav>
+            <!-- <button type="button" class="new-game-btn">New Game</button> -->
+            <span>Play Against:</span>
+            <button type="button" class="computer-choice-btn choice-selected">Computer</button>
+            <button type="button" class="player-choice-btn">Player</button>
+        </nav>
+    </header>
+    <div class="game-main">
+        <div class="interface">
+            <div class="game-btns">
+                <button type="button" class="switch-btn hidden">Switch Players</button>
+                <div>
+                    <button type="button" class="new-game-btn">New Game</button>
+                    <button type="button" class="start-btn">Start Game</button>
+                </div>
+                <button type="button" class="random-btn">Random Placement</button>
+            </div>
+            <div class="ships-container"></div>
+        </div>
+        <div class="board-container">
+        </div>
+        <div class="radar-container"></div>
+    </div>
+    <footer></footer>
+</div>
 </body>
 </html>
