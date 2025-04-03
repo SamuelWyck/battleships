@@ -38,13 +38,14 @@ const game = (function() {
                 return;
             }
 
-            if (event.target.matches(".ship-container")) {
+            const lowerElement = getLowerElement(event);
+            const target = (event.target.matches(".ship")) ? lowerElement : event.target;
+
+            if (target.matches(".ship-container")) {
                 ship.classList.remove("horizontal");
                 removeShip(ship);
-                event.target.appendChild(ship);
+                target.appendChild(ship);
             } else {
-                const targetTest = getShipFrontTarget(ship, event);
-                const target = (event.target.classList.contains("ship")) ? getLowerElement(event) : event.target;
                 const shipData = saveShipData(ship);
                 removeShip(ship);
                 const shipPlaced = placeShip(target, ship);
@@ -53,7 +54,6 @@ const game = (function() {
                 } else {
                     replaceShip(shipData);
                 }
-                console.log(playerOne.board.board);
             }
         }
     };
@@ -83,15 +83,15 @@ const game = (function() {
     };
 
     //might remove this
-    function getShipFrontTarget(ship, event) {
-        const rect = ship.getBoundingClientRect();
-        let frontX = (ship.classList.contains("horizontal")) ? event.clientX - (event.clientX - rect.left): event.clientX;
-        let frontY = (ship.classList.contains("horizontal")) ? event.clientY : event.clientY - (event.clientY - rect.top);
-        const elements = document.elementsFromPoint(frontX, frontY);
-        console.log(frontX)
-        console.log(event.clientX)
-        console.log(elements)
-    };
+    // function getShipFrontTarget(ship, event) {
+    //     const rect = ship.getBoundingClientRect();
+    //     let frontX = (ship.classList.contains("horizontal")) ? event.clientX - (event.clientX - rect.left): event.clientX;
+    //     let frontY = (ship.classList.contains("horizontal")) ? event.clientY : event.clientY - (event.clientY - rect.top);
+    //     const elements = document.elementsFromPoint(frontX, frontY);
+    //     console.log(frontX)
+    //     console.log(event.clientX)
+    //     console.log(elements)
+    // };
 
 
     function getLowerElement(event) {
