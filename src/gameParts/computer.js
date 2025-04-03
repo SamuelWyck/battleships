@@ -96,6 +96,9 @@ class Computer {
 
 
     makeAttack() {
+        if (this.shipLengthsToFind.length === 0) {
+            return;
+        }
         if (this.sightedShips.length > 0) {
             return this.#getNextHit(this.sightedShips[0]);
         } else {
@@ -192,10 +195,72 @@ class Computer {
     #getCoords(quad) {
         const row = this.#randInt(quad.sRow, quad.eRow);
         const col = this.#randInt(quad.sCol, quad.eCol);
-        if (this.radar.board[row][col] === this.radar.emptySymbol) {
+        if (this.radar.board[row][col] === this.radar.emptySymbol && this.#enoughSpace(row, col)) {
             return {"row": row, "col": col};
         }
         return null;
+    };
+
+
+    #enoughSpace(row, col) {
+        let minLength = Infinity;
+        for (let length of this.shipLengthsToFind) {
+            minLength = Math.min(minLength, length);
+        }
+
+        const verticalChange = [
+            {"rowChange": -1, "colChange": 0},
+            {"rowChange": 1, "colChange": 0},
+        ];
+        const horizontalChange = [
+            {"rowChange": 0, "colChange": -1},
+            {"rowChange": 0, "colChange": 1},
+        ];
+        const positionChanges = [verticalChange, horizontalChange];
+
+        for (let positionChange of positionChanges) {
+            if (this.#spaceFree(row, col, minLength, 1, positionChange, new Set())) {
+                return true;
+            }
+        }
+        return false;
+    };
+
+
+    #spaceFree(row, col, targetlength, currentLength, posChange, visited) {
+        const rowValid = 0 <= row && row < this.radar.board.length;
+        const colValid = 0 <= col && col < this.radar.board[0].length;
+        if (!rowValid || !colValid) {
+            return false;
+        }
+        const key = JSON.stringify([row, col]);
+        if (visited.has(key)) {
+            return false;
+        }
+        if (this.radar.board[row][col] !== this.radar.emptySymbol) {
+            return false;
+        }
+        if (currentLength === targetlength) {
+            return true;
+        }
+
+        visited.add(key);
+
+        const firstChange = posChange[0];
+        const secondChange = posChange[1];
+
+        const firstResult = this.#spaceFree(
+            row + firstChange.rowChange, col + firstChange.colChange, 
+            targetlength, currentLength + 1, posChange, visited
+        );
+        if (firstResult) {
+            return true;
+        }
+
+        return this.#spaceFree(
+            row + secondChange.rowChange, col + secondChange.colChange,
+            targetlength, currentLength + 1, posChange, visited
+        );
     };
 
 
