@@ -36,6 +36,11 @@ class Board {
     };
 
 
+    get ships() {
+        return this.#ships;
+    };
+
+
     #isValidPlacement(length, row, col, horizontal) {
         const rowValid = 0 <= row && row < this.#board.length;
         const colValid = 0 <= col && col < this.#board[0].length;
