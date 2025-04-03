@@ -32,6 +32,7 @@ class BoardInterface {
 
 
     createBoard() {
+        this.board.innerHTML = "";
         let letterIdx = 0;
         let numberIdx = 0;
         for (let i = 0; i < this.width * this.height; i += 1) {

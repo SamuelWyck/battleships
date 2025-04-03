@@ -17,6 +17,7 @@ class ShipInterface {
 
 
     createContainer() {
+        this.container.innerHTML = "";
         for (let i = 0; i < this.ships.length; i += 1) {
             const ship = this.ships[i];
             this.container.appendChild(this.#createShip(ship));
