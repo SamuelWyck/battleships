@@ -12,11 +12,12 @@ const game = (function() {
     manager.oceanDropEvent(shipDrop);
     manager.shipRotateEvent(shipRotate);
     manager.radarClickEvent(playerGuess);
+    manager.interfaceBtnClickEvent(interfaceBtnClick);
 
     const playerOne = new Player();
-    const playerTwo = new Computer();
+    let playerTwo = new Computer();
 
-    const gameStarted = false;
+    let gameStarted = false;
 
 
     function shipDrag(event) {
@@ -142,7 +143,7 @@ const game = (function() {
 
 
     function playerGuess(event) {
-        if (gameStarted || !event.target.matches(".radar-cell")) {
+        if (!gameStarted || !event.target.matches(".radar-cell")) {
             return false;
         }
 
@@ -160,5 +161,33 @@ const game = (function() {
             marker.classList.add("miss");
         }
         playerOne.radar.recordAttack(row, col, hit);
+        if (manager.playingAgainstComputer()) {
+            computerGuess();
+        }
+    };
+
+
+    function computerGuess() {
+        const attack = playerTwo.makeAttack();
+        const [hit, shipSunk] = playerOne.board.receiveAttack(attack.row, attack.col);
+        playerTwo.recordAttack(attack.row, attack.col, hit, shipSunk);
+        manager.updateOcean(attack.row, attack.col, hit);
+    };
+
+
+    function interfaceBtnClick(event) {
+        if (event.target.matches(".switch-btn")) {
+
+        } else if (event.target.matches(".new-game-btn")) {
+
+        } else if (event.target.matches(".start-btn") && !gameStarted) {
+            if (playerOne.board.ships.length === 5) {
+                playerTwo.placeShips();
+                console.log(playerTwo.board.board)
+                gameStarted = true;
+            }
+        } else if (event.target.matches(".random-btn")) {
+
+        }
     };
 })();
