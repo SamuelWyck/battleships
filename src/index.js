@@ -198,6 +198,7 @@ const game = (function() {
         manager.clearOceanBoard();
         manager.clearRadarBoard();
         console.log(playerOne.board.board);
-        console.log(playerOne.radar.board)
+        console.log(playerOne.radar.board);
+        gameStarted = false;
     };
 })();
