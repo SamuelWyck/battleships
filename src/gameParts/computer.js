@@ -8,7 +8,6 @@ class Computer {
         this.board = new Board();
         this.radar = new Radar();
         this.shipList = [2, 3, 3, 4, 5];
-        this.filledPOsitions = new Set();
         this.sightedShips = [];
         this.prevHits = [];
     };
