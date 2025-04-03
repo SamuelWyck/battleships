@@ -45,7 +45,6 @@ class DOMManager {
 
             if (Number(child.dataset.row) === row && Number(child.dataset.col) === col) {
                 const marker = child.firstChild;
-                console.log(marker);
                 if (hit) {
                     marker.classList.add("hit");
                 } else {
