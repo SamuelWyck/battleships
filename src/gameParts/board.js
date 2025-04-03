@@ -157,6 +157,7 @@ class Board {
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         ];
         this.#ships = [];
+        this.#attackedPositions = new Set();
     };
 
 
