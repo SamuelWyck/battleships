@@ -179,7 +179,7 @@ const game = (function() {
         if (event.target.matches(".switch-btn")) {
 
         } else if (event.target.matches(".new-game-btn")) {
-
+            handleNewGame();
         } else if (event.target.matches(".start-btn") && !gameStarted) {
             if (playerOne.board.ships.length === 5) {
                 playerTwo.placeShips();
@@ -189,5 +189,15 @@ const game = (function() {
         } else if (event.target.matches(".random-btn")) {
 
         }
+    };
+
+
+    function handleNewGame() {
+        playerOne.reset();
+        playerTwo.reset();
+        manager.clearOceanBoard();
+        manager.clearRadarBoard();
+        console.log(playerOne.board.board);
+        console.log(playerOne.radar.board)
     };
 })();
