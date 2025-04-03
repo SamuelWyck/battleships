@@ -10,6 +10,7 @@ class Computer {
         this.shipList = [2, 3, 3, 4, 5];
         this.sightedShips = [];
         this.prevHits = [];
+        this.shipLengthsToFind = [2, 3, 3, 4, 5];
     };
 
 
@@ -53,7 +54,22 @@ class Computer {
         } else if (hit && sunk) {
             this.#removeSightedShip(ship);
             this.#removeShipPrevHits(ship);
+            this.#removeShipLength(ship.length);
         }
+    };
+
+
+    #removeShipLength(shipLength) {
+        const newArray = [];
+        let found = false;
+        for (let length of this.shipLengthsToFind) {
+            if (length === shipLength && !found) {
+                found = true;
+                continue;
+            }
+            newArray.push(length);
+        }
+        this.shipLengthsToFind = newArray;
     };
 
 
