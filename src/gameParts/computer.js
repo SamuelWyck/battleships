@@ -14,6 +14,16 @@ class Computer {
     };
 
 
+    reset() {
+        this.board.clearBoard();
+        this.radar.clearBoard();
+        this.shipList = [2, 3, 3, 4, 5];
+        this.sightedShips = [];
+        this.prevHits = [];
+        this.shipLengthsToFind = [2, 3, 3, 4, 5];
+    };
+
+
     placeShips() {
         while (this.shipList.length > 0) {
             const ship = this.shipList.pop();
