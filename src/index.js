@@ -154,7 +154,7 @@ const game = (function() {
 
         const row = Number(event.target.dataset.row);
         const col = Number(event.target.dataset.col);
-        const [hit, shipSunk] = playerTwo.board.receiveAttack(row, col);
+        const [hit, shipSunk, ship] = playerTwo.board.receiveAttack(row, col);
         if (hit) {
             marker.classList.add("hit");
         } else {
@@ -169,8 +169,8 @@ const game = (function() {
 
     function computerGuess() {
         const attack = playerTwo.makeAttack();
-        const [hit, shipSunk] = playerOne.board.receiveAttack(attack.row, attack.col);
-        playerTwo.recordAttack(attack.row, attack.col, hit, shipSunk);
+        const [hit, shipSunk, ship] = playerOne.board.receiveAttack(attack.row, attack.col);
+        playerTwo.recordAttack(attack.row, attack.col, hit, shipSunk, ship);
         manager.updateOcean(attack.row, attack.col, hit);
     };
 
