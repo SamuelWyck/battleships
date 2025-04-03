@@ -26,6 +26,17 @@ class DOMManager {
     };
 
 
+    clearRadarBoard() {
+        this.radar.createBoard();
+    };
+
+
+    clearOceanBoard() {
+        this.ocean.createBoard();
+        this.shipsContainer.createContainer();
+    };
+
+
     updateOcean(row, col, hit) {
         for (let child of this.ocean.board.children) {
             if (!child.matches(".board-cell")) {
