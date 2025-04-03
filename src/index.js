@@ -11,6 +11,7 @@ const game = (function() {
     manager.oceanDragOverEvent();
     manager.oceanDropEvent(shipDrop);
     manager.shipRotateEvent(shipRotate);
+    manager.radarClickEvent(playerGuess);
 
     const playerOne = new Player();
     const playerTwo = new Computer();
@@ -137,5 +138,27 @@ const game = (function() {
         const row = Number(ship.parentNode.dataset.row);
         const col = Number(ship.parentNode.dataset.col);
         playerOne.removeShip(row, col);
+    };
+
+
+    function playerGuess(event) {
+        if (gameStarted || !event.target.matches(".radar-cell")) {
+            return false;
+        }
+
+        const marker = event.target.firstChild;
+        if (marker.matches(".miss") || marker.matches(".hit")) {
+            return false;
+        }
+
+        const row = Number(event.target.dataset.row);
+        const col = Number(event.target.dataset.col);
+        const [hit, shipSunk] = playerTwo.board.receiveAttack(row, col);
+        if (hit) {
+            marker.classList.add("hit");
+        } else {
+            marker.classList.add("miss");
+        }
+        playerOne.radar.recordAttack(row, col, hit);
     };
 })();
