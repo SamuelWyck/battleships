@@ -17,7 +17,32 @@ class DOMManager {
         this.shipsContainer = new ShipInterface(shipContainer);
         this.shipsContainer.createContainer();
 
-        this.switchPlayerBtn = document.querySelector(".switch-btn");
+        this.computerBtn = document.querySelector(".computer-choice-btn");
+    };
+
+
+    playingAgainstComputer() {
+        return this.computerBtn.classList.contains("choice-selected");
+    };
+
+
+    updateOcean(row, col, hit) {
+        for (let child of this.ocean.board.children) {
+            if (!child.matches(".board-cell")) {
+                continue;
+            }
+
+            if (Number(child.dataset.row) === row && Number(child.dataset.col) === col) {
+                const marker = child.firstChild;
+                console.log(marker);
+                if (hit) {
+                    marker.classList.add("hit");
+                } else {
+                    marker.classList.add("miss");
+                }
+                break;
+            }
+        }
     };
 
 
