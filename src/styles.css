@@ -46,6 +46,7 @@ header span {
     letter-spacing: .05rem;
     position: relative;
     top: -1px;
+    cursor: default;
 }
 
 .logo {
