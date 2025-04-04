@@ -18,8 +18,6 @@ class DOMManager {
         this.shipsContainer = new ShipInterface(shipContainer);
         this.shipsContainer.createContainer();
 
-        this.computerBtn = document.querySelector(".computer-choice-btn");
-
         this.popup = new PopUp("popup", "hidden");
         this.popup.createPopup();
     };
@@ -29,11 +27,6 @@ class DOMManager {
         if (this.popup.showPopup(text)) {
             setTimeout(this.popup.hidePopup.bind(this.popup), 2000);
         }
-    };
-
-
-    playingAgainstComputer() {
-        return this.computerBtn.classList.contains("choice-selected");
     };
 
 
