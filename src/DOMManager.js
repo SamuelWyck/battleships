@@ -1,5 +1,6 @@
 import BoardInterface from "./interfaceParts/DOMboard.js";
 import ShipInterface from "./interfaceParts/shipContainer.js";
+import PopUp from "./interfaceParts/popup.js";
 
 
 class DOMManager {
@@ -18,6 +19,16 @@ class DOMManager {
         this.shipsContainer.createContainer();
 
         this.computerBtn = document.querySelector(".computer-choice-btn");
+
+        this.popup = new PopUp("popup", "hidden");
+        this.popup.createPopup();
+    };
+
+
+    showPopup(text=null) {
+        if (this.popup.showPopup(text)) {
+            setTimeout(this.popup.hidePopup.bind(this.popup), 2000);
+        }
     };
 
 
