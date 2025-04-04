@@ -20,9 +20,11 @@ class PopUp {
         if (!this.popup.classList.contains(this.hideClass)) {
             return false;
         }
-        if (text !== null) {
-            this.popup.textContent = text;
+        if (text === null) {
+            return false;
         }
+
+        this.popup.textContent = text;
 
         this.popup.classList.remove(this.hideClass);
         return true;
