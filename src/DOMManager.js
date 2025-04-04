@@ -25,7 +25,6 @@ class DOMManager {
         this.dialog = new Dialog("dialog", "hidden");
         this.dialog.createDialog();
         this.dialog.createExitEventListener();
-        this.dialog.showDialog()
         this.headerBtnClickEvent();
     };
 
