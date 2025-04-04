@@ -23,6 +23,7 @@ header {
     align-items: center;
     padding: 0 .5rem;
     background-color: #7E8D85;
+    background-image: linear-gradient(180deg, #233329, #7E8D85, #233329);
     padding-bottom: .05rem;
 }
 
@@ -45,6 +46,7 @@ header span {
     letter-spacing: .05rem;
     position: relative;
     top: -1px;
+    cursor: default;
 }
 
 .logo {
@@ -53,20 +55,15 @@ header span {
     top: 2px;
 }
 
-nav {
-    display: flex;
-    align-items: center;
-}
-
 .computer-choice-btn {
     margin: 0 1rem;
 }
 
 header button {
-    background-color: inherit;
+    background: none;
     color: #A2E3C4;
     border: none;
-    font-size: 1.2rem;
+    font-size: 1.3rem;
     font-weight: bold;
     cursor: pointer;
     padding: 0 .5rem;
@@ -82,7 +79,6 @@ header button:hover, .choice-selected {
     min-height: 100vh;
     display: grid;
     grid-template-rows: min-content 1fr min-content;
-    background-color: #034078;
     background-image: radial-gradient(black 50%, gray);
 }
 
@@ -111,14 +107,22 @@ header button:hover, .choice-selected {
     background-repeat: no-repeat;
     background-position: right bottom 12%;
     background-color: black;
-    /* background-image: url("./images/radar2.jpg");
-    background-size: cover; */
+    border-color: #00fe00;
 }
 
 .board > div, .radar > div {
     width: 50px;
     height: 50px;
     border: 1px solid #7E8D85;
+    display: flex;
+    position: relative;
+}
+
+.radar > div {
+    border-color: #00fe00;
+}
+
+.board-coord-cell, .radar-coord-cell {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -127,8 +131,7 @@ header button:hover, .choice-selected {
     font-size: 1.5rem;
 }
 
-.radar > div {
-    /* border: 1px solid black; */
+.radar-coord-cell {
     color: #c0ff85;
 }
 
@@ -136,28 +139,37 @@ header button:hover, .choice-selected {
     width: 25px;
     height: 25px;
     border-radius: 50%;
-    z-index: 1;
+    z-index: 2;
     background-color: none;
+    position: absolute;
+    top: 50%;
+    right: 50%;
+    transform: translate(50%, -50%);
+    display: none;
 }
 
 div.board-cell-marker.hit, div.radar-cell-marker.hit {
     background-color: red;
     border: 2px solid rgb(219, 1, 1);
+    position: absolute;
+    display: block;
 }
 
 div.board-cell-marker.miss, div.radar-cell-marker.miss {
     background-color: white;
     border: 2px solid rgb(206, 206, 206);
+    position: absolute;
+    display: block;
 }
 
 .ship {
     width: 50px;
-    border: 1px solid black;
-    background-color: #7E8D85;
+    background-color: none;
     background-repeat: no-repeat;
     background-position: center;
     background-size: contain;
     cursor: pointer;
+    z-index: 1;
 }
 
 .battleship {
@@ -168,6 +180,7 @@ div.board-cell-marker.miss, div.radar-cell-marker.miss {
 .carrier {
     height: 250px;
     background-image: url("./images/carrier.png");
+    background-size: 120% 100%;
 }
 
 .submarine {
@@ -185,17 +198,45 @@ div.board-cell-marker.miss, div.radar-cell-marker.miss {
     background-image: url("./images/patrolBoat.png");
 }
 
-.ship.horizontal {
-    transform: rotate(-90deg);
+.horizontal {
+    flex-shrink: 0;
+    height: 50px;
+}
+
+.horizontal.carrier {
+    width: 250px;
+    background-image: url("./images/carrier-rot.png");
+    background-size: 100% 120%;
+}
+
+.horizontal.battleship {
+    width: 200px;
+    background-image: url("./images/battleship-rot.png");
+}
+
+.horizontal.destroyer {
+    width: 150px;
+    background-image: url("./images/destroyer-rot.png");
+}
+
+.horizontal.submarine {
+    width: 150px;
+    background-image: url("./images/submarine-rot.png");
+}
+
+.horizontal.patrol-boat {
+    width: 100px;
+    background-image: url("./images/patrolBoat-rot.png");
 }
 
 .ship-container {
     width: 292px;
+    height: 292px;
     display: grid;
     grid-template-columns: repeat(5, min-content);
     align-items: center;
     background-color: #034078;
-    background-image: radial-gradient(#7E8D85 30%, black);
+    background-image: radial-gradient(#7E8D85, black);
     border: 5px inset black;
     border-radius: 10px;
     padding: 1rem;
@@ -210,10 +251,11 @@ div.board-cell-marker.miss, div.radar-cell-marker.miss {
     border: 2px inset #7E8D85;
     border-radius: 10px;
     cursor: pointer;
+    background-image: linear-gradient(180deg, #233329, #7E8D85, #233329);
 }
 
 .interface button:hover {
-    background-image: radial-gradient(black, #7E8D85);
+    background-image: linear-gradient(180deg, #7E8D85, #233329, #7E8D85);
     color: #c0ff85;
 }
 
@@ -240,3 +282,86 @@ div.board-cell-marker.miss, div.radar-cell-marker.miss {
 .hidden {
     display: none;
 }
+
+
+.popup {
+    pointer-events: none;
+    opacity: 0;
+    position: absolute;
+    top: 20%;
+    left: 0;
+    right: 0;
+    width: fit-content;
+    margin: 0 auto;
+    z-index: 3;
+    color: #9bff28;
+    font-size: 5rem;
+    font-weight: 900;
+    animation-name: fade;
+    animation-duration: 2s;
+    animation-timing-function: linear;
+    animation-iteration-count: 1;
+}
+
+.dialog {
+    position: absolute;
+    top: 20%;
+    left: 0;
+    right: 0;
+    width: fit-content;
+    margin: 0 auto;
+    background-image: radial-gradient(#233329, #7E8D85);
+    background-image: radial-gradient(#7E8D85, #233329);
+    z-index: 4;
+    padding: 1rem;
+    border-radius: 10px;
+    border: 4px outset #233329;
+}
+
+.dialog > ol {
+    margin: 0 1rem 0 2.5rem;
+}
+
+.exit-btn-div {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.exit-btn-div > button {
+    font-size: 1.2rem;
+    font-family: "roboto", sans-serif;
+    font-weight: bold;
+    padding: .1rem .5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px;
+    border: 2px outset #233329;
+    background-color: #233329;
+    color: #c1e3a2;
+}
+
+.exit-btn-div > button:hover {
+    background-color: #c1e3a2;
+    color: #233329;
+    border-color: #c1e3a2;
+}
+
+.exit-btn-div > button:active {
+    border-style: inset;
+}
+
+.dialog  li {
+    max-width: 45ch;
+    color: #c1e3a2;
+    margin: 1.5rem 0;
+    font-size: 1.3rem;
+    letter-spacing: .02rem;
+}
+
+@keyframes fade {
+    0% {opacity: 1;}
+    75% {opacity: 1;}
+    100% {opacity: 0;}
+};

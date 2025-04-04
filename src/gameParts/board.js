@@ -36,6 +36,11 @@ class Board {
     };
 
 
+    get ships() {
+        return this.#ships;
+    };
+
+
     #isValidPlacement(length, row, col, horizontal) {
         const rowValid = 0 <= row && row < this.#board.length;
         const colValid = 0 <= col && col < this.#board[0].length;
@@ -105,23 +110,23 @@ class Board {
         const rowValid = 0 <= row && row < this.#board.length;
         const colValid = 0 <= col && col < this.#board[0].length;
         if (!rowValid || !colValid) {
-            return [null, null];
+            return [null, null, null];
         }
         const key = JSON.stringify([row, col]);
         if (this.#attackedPositions.has(key)) {
-            return [null, null];
+            return [null, null, null];
         }
 
         this.#attackedPositions.add(key);
         const position = this.#board[row][col];
         if (typeof position === "number") {
             this.#board[row][col] = this.#missSymbol;
-            return [false, false];
+            return [false, false, null];
         }
 
         const ship = position;
         ship.hit();
-        return [true, ship.isSunk()];
+        return [true, ship.isSunk(), ship];
     };
 
 
@@ -135,6 +140,24 @@ class Board {
             }
         }
         return true;
+    };
+
+
+    clearBoard() {
+        this.#board = [
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        ];
+        this.#ships = [];
+        this.#attackedPositions = new Set();
     };
 
 

@@ -11,6 +11,13 @@ class Player {
     };
 
 
+    reset() {
+        this.board.clearBoard();
+        this.radar.clearBoard();
+        this.shipList = [2, 3, 3, 4, 5];
+    };
+
+
     placeShip(length, row, col, horizontal) {
         if (this.board.placeShip(length, row, col, horizontal)) {
             this.#updateShipList(length, true);
