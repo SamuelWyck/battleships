@@ -23,9 +23,26 @@ const game = (function() {
     function shipDrag(event) {
         if (!gameStarted) {
             event.dataTransfer.clearData();
+            const offset = getMouseOffset(event);
+            event.dataTransfer.setData("offset", JSON.stringify(offset));
             event.dataTransfer.setData("text", event.target.id);
-            event.target.classList.add("lower-element");
         }
+    };
+
+
+    function getMouseOffset(event) {
+        const rect = event.target.getBoundingClientRect();
+        const isHorizontal = event.target.matches(".horizontal");
+        const paddingPxs = 25;
+        
+        const yOffset = (isHorizontal) ? event.clientY - (rect.top + (rect.height / 2)) :
+            event.clientY - rect.top - paddingPxs;
+        const xOffset = (isHorizontal) ? event.clientX - rect.left - paddingPxs : 
+            event.clientX - (rect.left + (rect.width / 2));
+        return {
+            "yOffset": yOffset,
+            "xOffset": xOffset,
+        };
     };
 
 
@@ -34,14 +51,13 @@ const game = (function() {
         if (!gameStarted) {
             const shipId = event.dataTransfer.getData("text");
             const ship = document.getElementById(shipId);
-            ship.classList.remove("lower-element");
+            const offset = JSON.parse(event.dataTransfer.getData("offset"));
+            const target = getDropTarget(event, offset);
+            console.log(target)
 
-            if (event.target.matches(".board-coord-cell")) {
+            if (!target.matches(".board-cell") && !target.matches(".ship-container")) {
                 return;
             }
-
-            const lowerElement = getLowerElement(event);
-            const target = (event.target.matches(".ship")) ? lowerElement : event.target;
 
             if (target.matches(".ship-container")) {
                 ship.classList.remove("horizontal");
@@ -58,6 +74,15 @@ const game = (function() {
                 }
             }
         }
+    };
+
+
+    function getDropTarget(event, offset) {
+        const x = event.clientX - offset.xOffset;
+        const y = event.clientY - offset.yOffset;
+        const elements = document.elementsFromPoint(x, y);
+        const targetEle = (elements[0].matches(".ship")) ? elements[1] : elements[0];
+        return targetEle;
     };
 
 
@@ -84,24 +109,13 @@ const game = (function() {
         }
     };
 
-    //might remove this
-    // function getShipFrontTarget(ship, event) {
-    //     const rect = ship.getBoundingClientRect();
-    //     let frontX = (ship.classList.contains("horizontal")) ? event.clientX - (event.clientX - rect.left): event.clientX;
-    //     let frontY = (ship.classList.contains("horizontal")) ? event.clientY : event.clientY - (event.clientY - rect.top);
-    //     const elements = document.elementsFromPoint(frontX, frontY);
-    //     console.log(frontX)
-    //     console.log(event.clientX)
-    //     console.log(elements)
+
+    // function getLowerElement(event) {
+    //     const x = event.clientX;
+    //     const y = event.clientY;
+    //     const elements = document.elementsFromPoint(x, y);
+    //     return elements[1];
     // };
-
-
-    function getLowerElement(event) {
-        const x = event.clientX;
-        const y = event.clientY;
-        const elements = document.elementsFromPoint(x, y);
-        return elements[1];
-    };
 
 
     function saveShipData(ship) {
