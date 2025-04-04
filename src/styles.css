@@ -55,20 +55,15 @@ header span {
     top: 2px;
 }
 
-nav {
-    display: flex;
-    align-items: center;
-}
-
 .computer-choice-btn {
     margin: 0 1rem;
 }
 
 header button {
-    background-color: inherit;
+    background: none;
     color: #A2E3C4;
     border: none;
-    font-size: 1.2rem;
+    font-size: 1.3rem;
     font-weight: bold;
     cursor: pointer;
     padding: 0 .5rem;
@@ -84,7 +79,6 @@ header button:hover, .choice-selected {
     min-height: 100vh;
     display: grid;
     grid-template-rows: min-content 1fr min-content;
-    background-color: #034078;
     background-image: radial-gradient(black 50%, gray);
 }
 
