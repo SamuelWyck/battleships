@@ -1,6 +1,7 @@
 import BoardInterface from "./interfaceParts/DOMboard.js";
 import ShipInterface from "./interfaceParts/shipContainer.js";
 import PopUp from "./interfaceParts/popup.js";
+import Dialog from "./interfaceParts/dialog.js";
 
 
 class DOMManager {
@@ -20,6 +21,12 @@ class DOMManager {
 
         this.popup = new PopUp("popup", "hidden");
         this.popup.createPopup();
+
+        this.dialog = new Dialog("dialog", "hidden");
+        this.dialog.createDialog();
+        this.dialog.createExitEventListener();
+        this.dialog.showDialog()
+        this.headerBtnClickEvent();
     };
 
 
@@ -60,11 +67,11 @@ class DOMManager {
     };
 
 
-    headerBtnClickEvent(callback) {
-        const nav = document.querySelector("nav");
-        nav.addEventListener("click", function(event) {
-            callback(event);
-        });
+    headerBtnClickEvent() {
+        const headerBtn = document.querySelector(".how-play-btn");
+        headerBtn.addEventListener("click", function(event) {
+            this.dialog.showDialog();
+        }.bind(this));
     };
 
 
