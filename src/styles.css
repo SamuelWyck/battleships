@@ -241,7 +241,7 @@ div.board-cell-marker.miss, div.radar-cell-marker.miss {
     grid-template-columns: repeat(5, min-content);
     align-items: center;
     background-color: #034078;
-    background-image: radial-gradient(#7E8D85 30%, black);
+    background-image: radial-gradient(#7E8D85, black);
     border: 5px inset black;
     border-radius: 10px;
     padding: 1rem;
