@@ -14,8 +14,8 @@ const game = (function() {
     manager.radarClickEvent(playerGuess);
     manager.interfaceBtnClickEvent(interfaceBtnClick);
 
-    const playerOne = new Player();
-    let playerTwo = new Computer();
+    const player = new Player();
+    const computer = new Computer();
 
     let gameStarted = false;
     let gameOver = false;
@@ -90,7 +90,7 @@ const game = (function() {
         if (!gameStarted) {
             const shipData = saveShipData(event.target);
             removeShip(event.target);
-            const shipPlaced = playerOne.placeShip(
+            const shipPlaced = player.placeShip(
                 shipData.length, 
                 shipData.row,
                 shipData.col, 
@@ -99,7 +99,7 @@ const game = (function() {
             if (shipPlaced) {
                 event.target.classList.toggle("horizontal");
             } else {
-                playerOne.placeShip(
+                player.placeShip(
                     shipData.length, 
                     shipData.row,
                     shipData.col, 
@@ -124,12 +124,12 @@ const game = (function() {
         const col = Number(target.dataset.col);
         const length = Number(ship.dataset.length);
         const horizontal = ship.classList.contains("horizontal");
-        return playerOne.placeShip(length, row, col, horizontal);
+        return player.placeShip(length, row, col, horizontal);
     };
 
 
     function replaceShip(shipData) {
-        playerOne.placeShip(
+        player.placeShip(
             shipData.length, 
             shipData.row, 
             shipData.col, 
@@ -144,7 +144,7 @@ const game = (function() {
         }
         const row = Number(ship.parentNode.dataset.row);
         const col = Number(ship.parentNode.dataset.col);
-        playerOne.removeShip(row, col);
+        player.removeShip(row, col);
     };
 
 
@@ -163,11 +163,11 @@ const game = (function() {
 
         const row = Number(event.target.dataset.row);
         const col = Number(event.target.dataset.col);
-        const [hit, shipSunk, ship] = playerTwo.board.receiveAttack(row, col);
+        const [hit, shipSunk, ship] = computer.board.receiveAttack(row, col);
         if (hit) {
             marker.classList.add("hit");
             if (shipSunk) {
-                if (checkGameOver(playerTwo)) {
+                if (checkGameOver(computer)) {
                     manager.showPopup("Player One Wins!");
                     gameOver = true;
                 } else {
@@ -177,19 +177,17 @@ const game = (function() {
         } else {
             marker.classList.add("miss");
         }
-        playerOne.radar.recordAttack(row, col, hit);
-        if (manager.playingAgainstComputer()) {
-            computerGuess();
-        }
+        player.radar.recordAttack(row, col, hit);
+        computerGuess();
     };
 
 
     function computerGuess() {
-        const attack = playerTwo.makeAttack();
-        const [hit, shipSunk, ship] = playerOne.board.receiveAttack(attack.row, attack.col);
-        playerTwo.recordAttack(attack.row, attack.col, hit, shipSunk, ship);
+        const attack = computer.makeAttack();
+        const [hit, shipSunk, ship] = player.board.receiveAttack(attack.row, attack.col);
+        computer.recordAttack(attack.row, attack.col, hit, shipSunk, ship);
         manager.updateOcean(attack.row, attack.col, hit);
-        if (checkGameOver(playerOne)) {
+        if (checkGameOver(player)) {
             manager.showPopup("Computer Wins!");
             gameOver = true;
         }
@@ -202,9 +200,7 @@ const game = (function() {
 
 
     function interfaceBtnClick(event) {
-        if (event.target.matches(".switch-btn")) {
-
-        } else if (event.target.matches(".new-game-btn")) {
+        if (event.target.matches(".new-game-btn")) {
             handleNewGame();
         } else if (event.target.matches(".start-btn") && !gameStarted) {
             handleStartGame();
@@ -215,8 +211,8 @@ const game = (function() {
 
 
     function handleStartGame() {
-        if (playerOne.board.ships.length === 5) {
-            playerTwo.placeShips();
+        if (player.board.ships.length === 5) {
+            computer.placeShips();
             gameStarted = true;
         } else {
             manager.showPopup("Place All Ships")
@@ -225,8 +221,8 @@ const game = (function() {
 
 
     function handleNewGame() {
-        playerOne.reset();
-        playerTwo.reset();
+        player.reset();
+        computer.reset();
         manager.clearOceanBoard();
         manager.clearRadarBoard();
         gameStarted = false;
