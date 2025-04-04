@@ -288,3 +288,28 @@ div.board-cell-marker.miss, div.radar-cell-marker.miss {
 .hidden {
     display: none;
 }
+
+
+.popup {
+    pointer-events: none;
+    position: absolute;
+    top: 40%;
+    left: 0;
+    right: 0;
+    width: fit-content;
+    margin: 0 auto;
+    z-index: 3;
+    color: #c0ff85;
+    font-size: 5rem;
+    font-weight: bold;
+    animation-name: fade;
+    animation-delay: 1.5s;
+    animation-duration: .5s;
+    animation-timing-function: linear;
+    animation-iteration-count: 1;
+}
+
+@keyframes fade {
+    0% {opacity: 1;}
+    100% {opacity: 0;}
+};
