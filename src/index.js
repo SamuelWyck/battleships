@@ -168,7 +168,7 @@ const game = (function() {
             marker.classList.add("hit");
             if (shipSunk) {
                 if (checkGameOver(computer)) {
-                    manager.showPopup("Player One Wins!");
+                    manager.showPopup("Player Wins!");
                     gameOver = true;
                 } else {
                     manager.showPopup("Ship Sunk!")
