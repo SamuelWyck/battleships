@@ -256,7 +256,6 @@ div.board-cell-marker.miss, div.radar-cell-marker.miss {
 
 .interface button:hover {
     background-image: linear-gradient(180deg, #7E8D85, #233329, #7E8D85);
-    /* background-image: radial-gradient(#233329, 90%, #7E8D85); */
     color: #c0ff85;
 }
 
@@ -302,6 +301,63 @@ div.board-cell-marker.miss, div.radar-cell-marker.miss {
     animation-duration: 2s;
     animation-timing-function: linear;
     animation-iteration-count: 1;
+}
+
+.dialog {
+    position: absolute;
+    top: 20%;
+    left: 0;
+    right: 0;
+    width: fit-content;
+    margin: 0 auto;
+    background-image: radial-gradient(#233329, #7E8D85);
+    background-image: radial-gradient(#7E8D85, #233329);
+    z-index: 4;
+    padding: 1rem;
+    border-radius: 10px;
+    border: 4px outset #233329;
+}
+
+.dialog > ol {
+    margin: 0 1rem 0 2.5rem;
+}
+
+.exit-btn-div {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.exit-btn-div > button {
+    font-size: 1.2rem;
+    font-family: "roboto", sans-serif;
+    font-weight: bold;
+    padding: .1rem .5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px;
+    border: 2px outset #233329;
+    background-color: #233329;
+    color: #c1e3a2;
+}
+
+.exit-btn-div > button:hover {
+    background-color: #c1e3a2;
+    color: #233329;
+    border-color: #c1e3a2;
+}
+
+.exit-btn-div > button:active {
+    border-style: inset;
+}
+
+.dialog  li {
+    max-width: 45ch;
+    color: #c1e3a2;
+    margin: 1.5rem 0;
+    font-size: 1.3rem;
+    letter-spacing: .02rem;
 }
 
 @keyframes fade {
