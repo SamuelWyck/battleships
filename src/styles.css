@@ -113,7 +113,7 @@ header button:hover, .choice-selected {
     background-repeat: no-repeat;
     background-position: right bottom 12%;
     background-color: black;
-    border-color: #c0ff85;
+    border-color: #00fe00;
 }
 
 .board > div, .radar > div {
@@ -125,7 +125,7 @@ header button:hover, .choice-selected {
 }
 
 .radar > div {
-    border-color: black;
+    border-color: #00fe00;
 }
 
 .board-coord-cell, .radar-coord-cell {
