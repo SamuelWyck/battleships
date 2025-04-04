@@ -10,11 +10,11 @@ class Dialog {
 
         this.hideClass = hideClass;
 
-        this.dragText = "1. Click and drag ships to place them on the ocean board.";
-        this.rotateText = "2. Double click any ship on the ocean board to rotate it about its front.";
-        this.guessText = "3. Once the game is started, click on the radar to make a guess. Red is a hit, white is a miss.";
-        this.compGuessText = "4. The computer's guesses will be shown on the ocean board.";
-        this.goalText = "5. The first to sink all of the other player's ships wins.";
+        this.dragText = "Click and drag ships to place them on the ocean board.";
+        this.rotateText = "Double click any ship on the ocean board to rotate it about its front.";
+        this.guessText = "Once the game is started, click on the radar to make a guess. Red is a hit, white is a miss.";
+        this.compGuessText = "The computer's guesses will be shown on the ocean board.";
+        this.goalText = "The first to sink all the other player's ships wins.";
 
         this.textList = [
             this.dragText, 
@@ -35,10 +35,10 @@ class Dialog {
     };
 
 
-    #createPara(text, className=null) {
-        const para = this.#createElement("p", className);
-        para.textContent = text;
-        return para;
+    #createListElement(text, className=null) {
+        const item = this.#createElement("li", className);
+        item.textContent = text;
+        return item;
     };
 
 
@@ -54,13 +54,13 @@ class Dialog {
     createDialog() {
         this.dialog.appendChild(this.#createExitBtn());
         
-        const infoDiv = this.#createElement("div");
+        const infoList = this.#createElement("ol");
 
         for (let text of this.textList) {
-            infoDiv.appendChild(this.#createPara(text));
+            infoList.appendChild(this.#createListElement(text));
         }
 
-        this.dialog.appendChild(infoDiv);
+        this.dialog.appendChild(infoList);
         this.parent.appendChild(this.dialog);
     };
 
