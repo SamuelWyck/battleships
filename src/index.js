@@ -18,6 +18,7 @@ const game = (function() {
     let playerTwo = new Computer();
 
     let gameStarted = false;
+    let gameOver = false;
 
 
     function shipDrag(event) {
@@ -53,7 +54,6 @@ const game = (function() {
             const ship = document.getElementById(shipId);
             const offset = JSON.parse(event.dataTransfer.getData("offset"));
             const target = getDropTarget(event, offset);
-            console.log(target)
 
             if (!target.matches(".board-cell") && !target.matches(".ship-container")) {
                 return;
@@ -110,14 +110,6 @@ const game = (function() {
     };
 
 
-    // function getLowerElement(event) {
-    //     const x = event.clientX;
-    //     const y = event.clientY;
-    //     const elements = document.elementsFromPoint(x, y);
-    //     return elements[1];
-    // };
-
-
     function saveShipData(ship) {
         const length = Number(ship.dataset.length);
         const row = Number(ship.parentNode.dataset.row);
@@ -158,12 +150,15 @@ const game = (function() {
 
     function playerGuess(event) {
         if (!gameStarted || !event.target.matches(".radar-cell")) {
-            return false;
+            return;
+        }
+        if (gameOver) {
+            return;
         }
 
         const marker = event.target.firstChild;
         if (marker.matches(".miss") || marker.matches(".hit")) {
-            return false;
+            return;
         }
 
         const row = Number(event.target.dataset.row);
@@ -171,6 +166,14 @@ const game = (function() {
         const [hit, shipSunk, ship] = playerTwo.board.receiveAttack(row, col);
         if (hit) {
             marker.classList.add("hit");
+            if (shipSunk) {
+                if (checkGameOver(playerTwo)) {
+                    manager.showPopup("Player One Wins!");
+                    gameOver = true;
+                } else {
+                    manager.showPopup("Ship Sunk!")
+                }
+            } 
         } else {
             marker.classList.add("miss");
         }
@@ -186,6 +189,15 @@ const game = (function() {
         const [hit, shipSunk, ship] = playerOne.board.receiveAttack(attack.row, attack.col);
         playerTwo.recordAttack(attack.row, attack.col, hit, shipSunk, ship);
         manager.updateOcean(attack.row, attack.col, hit);
+        if (checkGameOver(playerOne)) {
+            manager.showPopup("Computer Wins!");
+            gameOver = true;
+        }
+    };
+
+
+    function checkGameOver(player) {
+        return player.board.allShipsSunk();
     };
 
 
@@ -195,14 +207,19 @@ const game = (function() {
         } else if (event.target.matches(".new-game-btn")) {
             handleNewGame();
         } else if (event.target.matches(".start-btn") && !gameStarted) {
-            if (playerOne.board.ships.length === 5) {
-                playerTwo.placeShips();
-                // console.log(playerTwo.board.board);
-                // console.log(playerOne.board.board);
-                gameStarted = true;
-            }
+            handleStartGame();
         } else if (event.target.matches(".random-btn")) {
 
+        }
+    };
+
+
+    function handleStartGame() {
+        if (playerOne.board.ships.length === 5) {
+            playerTwo.placeShips();
+            gameStarted = true;
+        } else {
+            manager.showPopup("Place All Ships")
         }
     };
 
@@ -212,8 +229,7 @@ const game = (function() {
         playerTwo.reset();
         manager.clearOceanBoard();
         manager.clearRadarBoard();
-        // console.log(playerOne.board.board);
-        // console.log(playerOne.radar.board);
         gameStarted = false;
+        gameOver = false
     };
 })();
