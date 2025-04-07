@@ -205,7 +205,7 @@ const game = (function() {
         } else if (event.target.matches(".start-btn") && !gameStarted) {
             handleStartGame();
         } else if (event.target.matches(".random-btn")) {
-
+            handleRandomPlacement();
         }
     };
 
@@ -227,5 +227,18 @@ const game = (function() {
         manager.clearRadarBoard();
         gameStarted = false;
         gameOver = false
+    };
+
+
+    function handleRandomPlacement() {
+        if (!gameStarted) {
+            if (player.shipList.length < 5) {
+                player.reset();
+                manager.clearOceanBoard();
+            }
+            player.placeShips();
+            manager.placePlayerShips(player.board.board);
+            console.log(player.board.board)
+        }
     };
 })();
