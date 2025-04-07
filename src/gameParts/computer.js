@@ -1,5 +1,6 @@
 import Board from "./board.js";
 import Radar from "./radar.js";
+import ProbabilityBoard from "./probabilityBoard.js";
 
 
 class Computer {
@@ -7,20 +8,25 @@ class Computer {
     constructor() {
         this.board = new Board();
         this.radar = new Radar();
+        this.shipLengthsToFind = [2, 3, 3, 4, 5];
+        this.heatMap = new ProbabilityBoard();
+        this.heatMap.calculateProbability(this.shipLengthsToFind);
         this.shipList = [2, 3, 3, 4, 5];
         this.sightedShips = [];
         this.prevHits = [];
-        this.shipLengthsToFind = [2, 3, 3, 4, 5];
     };
 
 
     reset() {
         this.board.clearBoard();
         this.radar.clearBoard();
+        this.heatMap.clearBoard();
         this.shipList = [2, 3, 3, 4, 5];
         this.sightedShips = [];
         this.prevHits = [];
         this.shipLengthsToFind = [2, 3, 3, 4, 5];
+        this.heatMap.calculateProbability(this.shipLengthsToFind);
+        console.log(this.heatMap.board)
     };
 
 
@@ -55,17 +61,20 @@ class Computer {
 
     recordAttack(row, col, hit, sunk, ship) {
         this.radar.recordAttack(row, col, hit);
+        this.heatMap.recordAttack(row, col, hit);
         if (hit && !sunk) {
             if (this.sightedShips.indexOf(ship) === -1) {
                 this.sightedShips.push(ship);
             }
             this.prevHits.push({"row": row, "col": col, "ship": ship});
-
+            
         } else if (hit && sunk) {
             this.#removeSightedShip(ship);
             this.#removeShipPrevHits(ship);
             this.#removeShipLength(ship.length);
         }
+        this.heatMap.resetProbability();
+        this.heatMap.calculateProbability(this.shipLengthsToFind);
     };
 
 
@@ -112,13 +121,16 @@ class Computer {
         if (this.sightedShips.length > 0) {
             return this.#getNextHit(this.sightedShips[0]);
         } else {
-            while (true) {
-                const quadBounds = this.#getQuadrant();
-                const coords = this.#getCoords(quadBounds);
-                if (coords !== null) {
-                    return coords;
-                }
-            }
+            // while (true) {
+            //     const quadBounds = this.#getQuadrant();
+            //     const coords = this.#getCoords(quadBounds);
+            //     if (coords !== null) {
+            //         return coords;
+            //     }
+            // }
+            const attackList = this.heatMap.getBestAttacksList();
+            const randomIdx = this.#randInt(0, attackList.length - 1);
+            return attackList[randomIdx];
         }
     };
 
