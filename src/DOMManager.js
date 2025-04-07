@@ -66,6 +66,12 @@ class DOMManager {
     };
 
 
+    placePlayerShips(playerBoard) {
+        let shipList = this.shipsContainer.container.children;
+        this.ocean.placeShips(shipList, playerBoard, "horizontal");
+    };
+
+
     headerBtnClickEvent() {
         const headerBtn = document.querySelector(".how-play-btn");
         headerBtn.addEventListener("click", function(event) {
