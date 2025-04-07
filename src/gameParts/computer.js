@@ -12,7 +12,6 @@ class Computer {
         this.heatMap = new ProbabilityBoard();
         this.heatMap.calculateProbability(this.shipLengthsToFind);
         this.shipList = [2, 3, 3, 4, 5];
-        this.sightedShips = [];
         this.prevHits = [];
     };
 
@@ -22,7 +21,6 @@ class Computer {
         this.radar.clearBoard();
         this.heatMap.clearBoard();
         this.shipList = [2, 3, 3, 4, 5];
-        this.sightedShips = [];
         this.prevHits = [];
         this.shipLengthsToFind = [2, 3, 3, 4, 5];
         this.heatMap.calculateProbability(this.shipLengthsToFind);
@@ -59,22 +57,40 @@ class Computer {
     };
 
 
-    recordAttack(row, col, hit, sunk, ship) {
+    recordAttack(row, col, hit, sunk) {
         this.radar.recordAttack(row, col, hit);
         this.heatMap.recordAttack(row, col, hit);
-        if (hit && !sunk) {
-            if (this.sightedShips.indexOf(ship) === -1) {
-                this.sightedShips.push(ship);
-            }
-            this.prevHits.push({"row": row, "col": col, "ship": ship});
-            
-        } else if (hit && sunk) {
-            this.#removeSightedShip(ship);
-            this.#removeShipPrevHits(ship);
-            this.#removeShipLength(ship.length);
-        }
         this.heatMap.resetProbability();
-        this.heatMap.calculateProbability(this.shipLengthsToFind);
+        if (hit && !sunk) {
+            this.prevHits.push({"row": row, "col": col});
+            this.heatMap.calculateTargetProbability(this.prevHits, this.shipLengthsToFind);
+        } else if (hit && sunk) {
+            this.#cleanPrevHits({"row": row, "col": col});
+            this.prevHits = [];
+            this.heatMap.calculateProbability(this.shipLengthsToFind);
+        } else if (!hit && this.prevHits.length > 0) {
+            this.heatMap.calculateTargetProbability(this.prevHits, this.shipLengthsToFind);
+        } else {
+            this.heatMap.calculateProbability(this.shipLengthsToFind);
+        }
+    };
+
+
+    #cleanPrevHits(sinkingHit) {
+        if (this.prevHits.length + 1 > 5) {
+            const otherShip = this.#findOtherShip(this.prevHits.slice(), sinkingHit);
+        }
+
+        const beforeLength = this.shipLengthsToFind.length;
+        this.#removeShipLength(this.prevHits.length);
+        if (beforeLength === this.shipLengthsToFind.length) {
+
+        }
+    };
+
+
+    #findOtherShip(prevHits, sinkingHit) {
+        //figure out how to get from teh sinking hit to the hit farthest away from it
     };
 
 
@@ -89,42 +105,24 @@ class Computer {
             newArray.push(length);
         }
         this.shipLengthsToFind = newArray;
-    };
-
-
-    #removeSightedShip(ship) {
-        const newArray = [];
-        for (let sightedShip of this.sightedShips) {
-            if (sightedShip !== ship) {
-                newArray.push(sightedShip);
-            }
-        }
-        this.sightedShips = newArray;
-    };
-
-
-    #removeShipPrevHits(ship) {
-        const newArray = [];
-        for (let prevHit of this.prevHits) {
-            if (prevHit.ship !== ship) {
-                newArray.push(prevHit);
-            }
-        }
-        this.prevHits = newArray;
+        return found;
     };
 
 
     makeAttack() {
-        if (this.shipLengthsToFind.length === 0) {
-            return;
-        }
-        if (this.sightedShips.length > 0) {
-            return this.#getNextHit(this.sightedShips[0]);
-        } else {
-            const attackList = this.heatMap.getBestAttacksList();
-            const randomIdx = this.#randInt(0, attackList.length - 1);
-            return attackList[randomIdx];
-        }
+        // if (this.shipLengthsToFind.length === 0) {
+        //     return;
+        // }
+        // if (this.sightedShips.length > 0) {
+        //     return this.#getNextHit(this.sightedShips[0]);
+        // } else {
+        //     const attackList = this.heatMap.getBestAttacksList();
+        //     const randomIdx = this.#randInt(0, attackList.length - 1);
+        //     return attackList[randomIdx];
+        // }
+        const attackList = this.heatMap.getBestAttacksList();
+        const randomIdx = this.#randInt(0, attackList.length - 1);
+        return attackList[randomIdx];
     };
 
 
