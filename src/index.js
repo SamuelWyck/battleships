@@ -170,6 +170,8 @@ const game = (function() {
                 if (checkGameOver(computer)) {
                     manager.showPopup("Player Wins!");
                     gameOver = true;
+                    player.radar.recordAttack(row, col, hit);
+                    return;
                 } else {
                     manager.showPopup("Ship Sunk!")
                 }
