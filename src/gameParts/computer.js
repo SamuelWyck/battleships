@@ -121,13 +121,6 @@ class Computer {
         if (this.sightedShips.length > 0) {
             return this.#getNextHit(this.sightedShips[0]);
         } else {
-            // while (true) {
-            //     const quadBounds = this.#getQuadrant();
-            //     const coords = this.#getCoords(quadBounds);
-            //     if (coords !== null) {
-            //         return coords;
-            //     }
-            // }
             const attackList = this.heatMap.getBestAttacksList();
             const randomIdx = this.#randInt(0, attackList.length - 1);
             return attackList[randomIdx];
@@ -214,16 +207,6 @@ class Computer {
     };
 
 
-    #getCoords(quad) {
-        const row = this.#randInt(quad.sRow, quad.eRow);
-        const col = this.#randInt(quad.sCol, quad.eCol);
-        if (this.radar.board[row][col] === this.radar.emptySymbol && this.#enoughSpace(row, col)) {
-            return {"row": row, "col": col};
-        }
-        return null;
-    };
-
-
     #enoughSpace(row, col) {
         let minLength = Infinity;
         for (let length of this.shipLengthsToFind) {
@@ -283,37 +266,6 @@ class Computer {
             row + secondChange.rowChange, col + secondChange.colChange,
             targetlength, currentLength + 1, posChange, visited
         );
-    };
-
-
-    #getQuadrant() {
-        const finalRow = this.board.board.length - 1;
-        const finalCol = this.board.board[0].length - 1;
-        const quadNum = this.#randInt(0, 3);
-        let quadrant = null;
-
-        if (quadNum === 0) {
-            quadrant = {
-                "sRow": 0, "eRow": Math.floor(finalRow/2),
-                "sCol": 0, "eCol": Math.floor(finalCol/2)
-            };
-        } else if (quadNum === 1) {
-            quadrant = {
-                "sRow": 0, "eRow": Math.floor(finalRow/2),
-                "sCol": Math.floor(finalCol/2) + 1, "eCol": finalCol
-            };
-        } else if (quadNum === 2) {
-            quadrant = {
-                "sRow": Math.floor(finalRow/2) + 1, "eRow": finalRow,
-                "sCol": Math.floor(finalCol/2) + 1, "eCol": finalCol 
-            };
-        } else {
-            quadrant = {
-                "sRow": Math.floor(finalRow/2) + 1, "eRow": finalRow,
-                "sCol": 0, "eCol": Math.floor(finalCol/2)
-            };
-        }
-        return quadrant;
     };
 };
 
