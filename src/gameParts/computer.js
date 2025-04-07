@@ -90,7 +90,7 @@ class Computer {
 
 
     #findOtherShip(prevHits, sinkingHit) {
-        //figure out how to get from teh sinking hit to the hit farthest away from it
+        //figure out how to get from the sinking hit to the hit farthest away from it
     };
 
 
