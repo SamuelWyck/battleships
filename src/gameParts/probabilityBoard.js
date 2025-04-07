@@ -121,11 +121,66 @@ class ProbabilityBoard {
     };
 
 
-    // calculateTargetProbability(hitList, shipList) {
-    //     for (let hit of hitList) {
-            
-    //     }
-    // };
+    calculateTargetProbability(hitList, shipList) {
+        const hitSet = new Set();
+        for (let hit of hitList) {
+            hitSet.add(JSON.stringify(hit));
+        }
+        for  (let ship of shipList) {
+            for (let hit of hitList) {
+                this.#calcHorizontalHitProb(hit.row, hit.col, ship, hitSet);
+                this.#calcVerticalHitProb(hit.row, hit.col, ship, hitSet);
+            }
+        }
+
+        for (let hit of hitList) {
+            const cell = this.board[hit.row][hit.col];
+            cell.resetHuntWeight();
+        }
+    };
+
+
+    #calcHorizontalHitProb(row, col, shipLength, hitSet) {
+        const posChange = {"rowChange": 0, "colChange": 1};
+        for (let newCol = col; newCol > col - shipLength; newCol -= 1) {
+            this.#calcHitWeight(row, newCol, 1, shipLength, posChange, hitSet);
+        }
+    };
+
+
+    #calcVerticalHitProb(row, col, shipLength, hitSet) {
+        const posChange = {"rowChange": 1, "colChange": 0};
+        for (let newRow = row; newRow > row - shipLength; newRow -= 1) {
+            this.#calcHitWeight(newRow, col, 1, shipLength, posChange, hitSet);
+        }
+    };
+
+
+    #calcHitWeight(row, col, currentLength, targetlength, posChange, hitSet) {
+        const rowValid = 0 <= row && row < this.board.length;
+        const colValid = 0 <= col && col < this.board[0].length;
+        if (!rowValid || !colValid) {
+            return false;
+        }
+
+        const cell = this.board[row][col];
+        const key = JSON.stringify({"row": row, "col": col});
+        if ((cell.hit && !hitSet.has(key)) || cell.miss) {
+            return false;
+        }
+        if (currentLength === targetlength) {
+            cell.increaseHuntWeight();
+            return true;
+        }
+
+        const newRow = row + posChange.rowChange;
+        const newCol = col + posChange.colChange;
+        const success = this.#calcHitWeight(newRow, newCol, currentLength + 1, targetlength, posChange, hitSet);
+        if (success) {
+            cell.increaseHuntWeight();
+        }
+        return success;
+    };
 
 
     getBestAttacksList() {
