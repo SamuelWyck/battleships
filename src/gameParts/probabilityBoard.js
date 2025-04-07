@@ -121,6 +121,13 @@ class ProbabilityBoard {
     };
 
 
+    // calculateTargetProbability(hitList, shipList) {
+    //     for (let hit of hitList) {
+            
+    //     }
+    // };
+
+
     getBestAttacksList() {
         let attackList = [];
         let maxWeight = 1;
