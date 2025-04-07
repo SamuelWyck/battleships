@@ -74,6 +74,60 @@ class BoardInterface {
         cell.appendChild(marker);
         return cell;
     };
+
+
+    placeShips(shipElements, playerBoard, horizontalClass) {
+        const placedShips = new Set();
+
+        for (let row = 0; row < playerBoard.length; row += 1) {
+            for (let col = 0; col < playerBoard[row].length; col += 1) {
+                const local = playerBoard[row][col];
+                if (local !== 0 && !placedShips.has(local)) {
+                    const horizontal = this.#isHorizontal(row, col, playerBoard);
+                    this.#placeShip(shipElements, row, col, horizontal, horizontalClass, playerBoard);
+                    placedShips.add(local);
+                    if (placedShips.length === 5) {
+                        return;
+                    }
+                }
+            }
+        }
+    };
+
+
+    #placeShip(shipElements, row, col, horizontal, horizontalClass, playerBoard) {
+        const boardCell = document.querySelector(`.${this.cellClassName}[data-row="${row}"][data-col="${col}"]`);
+        const ship = playerBoard[row][col];
+        const shipLength = String(ship.length);
+
+        let shipToPlace = null;
+        for (let shipEle of shipElements) {
+            if (shipEle.dataset.length === shipLength) {
+                shipToPlace = shipEle;
+                shipEle.remove();
+                break;
+            }
+        }
+
+        if (horizontal) {
+            shipToPlace.classList.add(horizontalClass);
+        }
+        boardCell.appendChild(shipToPlace);
+    };
+
+
+    #isHorizontal(row, col, playerBoard) {
+        const ship = playerBoard[row][col];
+        const newCol = col + 1;
+        const newColValid = 0 <= newCol && newCol < playerBoard[0].length;
+        if (!newColValid) {
+            return false;
+        }
+        if (playerBoard[row][newCol] === ship) {
+            return true;
+        }
+        return false;
+    };
 };
 
 
