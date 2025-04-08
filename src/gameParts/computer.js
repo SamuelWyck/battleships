@@ -149,33 +149,6 @@ class Computer {
     };
 
 
-    #notBiggerShip(ship) {
-        const finalCoord = ship.possibleOtherShip;
-        const startCoord = ship.sinkingHit;
-        const vertical = finalCoord.col === startCoord.col;
-        
-        if (vertical) {
-            const rowChange = (finalCoord.row < startCoord.row) ? -1 : 1;
-            const newRow = finalCoord.row + rowChange;
-
-            const rowValid = 0 <= newRow && newRow < this.board.board.length;
-            if (rowValid && this.board.board[newRow][finalCoord.col] === this.board.hitSymbol) {
-                return false;
-            }
-            return true;
-        } else {
-            const colChange = (finalCoord.col < startCoord.col) ? -1 : 1;
-            const newCol = finalCoord.col + colChange;
-
-            const colValid = 0 <= newCol && newCol < this.board.board[0].length;
-            if (colValid && this.board.board[finalCoord.row][newCol] === this.board.hitSymbol) {
-                return false;
-            }
-            return true;
-        }
-    };
-
-
     #removeShipCoords(shipCoords) {
         const coordSet = new Set();
         for (let coord of shipCoords) {
@@ -263,7 +236,7 @@ class Computer {
                 return this.#getPossibleShip(coord, shipCoords, visited);
             }
         }
-        
+
         return currentHit;
     };
 
