@@ -105,22 +105,7 @@ class Computer {
             this.prevHits.push(otherShipCoord);
 
         } else if (this.shipLengthsToFind.length === beforeLength) {
-            this.savedPrevHits = this.prevHits.slice();
-            this.prevHits = [];
-            this.lengthCollsion = true;
-            this.searchedLength = shipCoords.length;
-            this.sunkShips.push({
-                "coords": shipCoords, 
-                "length": shipCoords.length, 
-                "sinkingHit": sinkingHit,
-                "possibleOtherShip": this.#findOtherShip(sinkingHit, shipCoords)
-            });
-            for (let sunkShip of this.sunkShips) {
-                if (sunkShip.length !== shipCoords.length) {
-                    continue;
-                }
-                this.prevHits.push(sunkShip.possibleOtherShip);
-            }
+            this.#handleCollisionSearch(shipCoords, sinkingHit);
 
         } else {
             this.sunkShips.push({
@@ -131,6 +116,26 @@ class Computer {
             });
         }
         
+    };
+
+
+    #handleCollisionSearch(shipCoords, sinkingHit) {
+        this.savedPrevHits = this.prevHits.slice();
+        this.prevHits = [];
+        this.lengthCollsion = true;
+        this.searchedLength = shipCoords.length;
+        this.sunkShips.push({
+            "coords": shipCoords, 
+            "length": shipCoords.length, 
+            "sinkingHit": sinkingHit,
+            "possibleOtherShip": this.#findOtherShip(sinkingHit, shipCoords)
+        });
+        for (let sunkShip of this.sunkShips) {
+            if (sunkShip.length !== shipCoords.length) {
+                continue;
+            }
+            this.prevHits.push(sunkShip.possibleOtherShip);
+        }
     };
 
 
