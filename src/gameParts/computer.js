@@ -89,24 +89,9 @@ class Computer {
         let substituteLength = false;
 
         if (this.lengthCollsion) {
-            const coordSet = new Set();
-            for (let coord of shipCoords) {
-                coordSet.add(JSON.stringify(coord));
-            }
-            for (let sunkShip of this.sunkShips) {
-                if (sunkShip.length === this.searchedLength && coordSet.has(sunkShip.possibleOtherShip)) {
-                    sunkShip.length = -1;
-                    break;
-                }
-            }
-            this.prevHits = this.savedPrevHits.slice();
-            this.savedPrevHits = [];
-            beforeLength = (shipCoords.length === 2) ? this.shipLengthsToFind.length - 1 : this.shipLengthsToFind.length;
-            if (beforeLength === this.shipLengthsToFind.length) {
-                this.#removeShipLength(shipCoords.length);
-            } else {
-                substituteLength = true;
-            }
+            const [newBefore, newSub] = this.#handleLengthCollision(shipCoords, beforeLength, substituteLength);
+            beforeLength = newBefore;
+            substituteLength = newSub;
         } else {
             this.#removeShipCoords(shipCoords);
             beforeLength = this.shipLengthsToFind.length;
@@ -146,6 +131,29 @@ class Computer {
             });
         }
         
+    };
+
+
+    #handleLengthCollision(shipCoords, beforeLength, substituteLength) {
+        const coordSet = new Set();
+        for (let coord of shipCoords) {
+            coordSet.add(JSON.stringify(coord));
+        }
+        for (let sunkShip of this.sunkShips) {
+            if (sunkShip.length === this.searchedLength && coordSet.has(sunkShip.possibleOtherShip)) {
+                sunkShip.length = -1;
+                break;
+            }
+        }
+        this.prevHits = this.savedPrevHits.slice();
+        this.savedPrevHits = [];
+        beforeLength = (shipCoords.length === 2) ? this.shipLengthsToFind.length - 1 : this.shipLengthsToFind.length;
+        if (beforeLength === this.shipLengthsToFind.length) {
+            this.#removeShipLength(shipCoords.length);
+        } else {
+            substituteLength = true;
+        }
+        return [beforeLength, substituteLength];
     };
 
 
