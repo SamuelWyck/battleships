@@ -110,7 +110,7 @@ class Computer {
         } else {
             this.sunkShips.push({
                 "coords": shipCoords, 
-                "length": (substituteLength) ? -1 : shipCoords.length, 
+                "length": (substituteLength || shipCoords.length === 2) ? -1 : shipCoords.length, 
                 "sinkingHit": sinkingHit,
                 "possibleOtherShip": this.#findOtherShip(sinkingHit, shipCoords)
             });
@@ -255,6 +255,9 @@ class Computer {
 
 
     #removeShipLength(shipLength) {
+        if (shipLength === 2) {
+            return true;
+        }
         const newArray = [];
         let found = false;
         for (let length of this.shipLengthsToFind) {
@@ -270,22 +273,100 @@ class Computer {
 
 
     makeAttack() {
-        const attackList = this.heatMap.getBestAttacksList();
-        const randomIdx = this.#randInt(0, attackList.length - 1);
-        const attack =  attackList[randomIdx];
+        let attackList = this.heatMap.getBestAttacksList();
+        let randomIdx = this.#randInt(0, attackList.length - 1);
+        let attack =  attackList[randomIdx];
 
+        if (attack === undefined) {
+            if (this.#areAdjacentHits()) {
+                // this.#handleSkip();
+                // this.heatMap.resetProbability();
+                // this.heatMap.calculateTargetProbability(this.prevHits, this.shipLengthsToFind);
+                // const attackList = this.heatMap.getBestAttacksList();
+                // const randomIdx = this.#randInt(0, attackList.length - 1);
+                // attack = attackList[randomIdx];
+                attack = this.#searchHit();
+            }
+        }
         if (attack === undefined) {
             this.prevHits = this.savedPrevHits.slice();
             this.savedPrevHits = [];
             this.lengthCollsion = false;
             this.heatMap.resetProbability();
             this.heatMap.calculateProbability(this.shipLengthsToFind);
-            const attackList = this.heatMap.getBestAttacksList();
-            const randomIdx = this.#randInt(0, attackList.length - 1);
+            attackList = this.heatMap.getBestAttacksList();
+            randomIdx = this.#randInt(0, attackList.length - 1);
             return attackList[randomIdx];
         }
 
         return attack;
+    };
+
+
+    #searchHit() {
+        
+    };
+
+
+    #areAdjacentHits() {
+        if (this.prevHits.length === 1) {
+            return true;
+        }
+
+        const savePrevHits = this.prevHits;
+        this.prevHits = this.prevHits.slice(1);
+        const coords = this.#getShipCoords(savePrevHits[0]);
+        this.prevHits = savePrevHits;
+        if (coords.length === this.prevHits.length) {
+            return true;
+        }
+        return false;
+    };
+
+
+    #handleSkip() {
+        const newHits = [];
+        const hitSet = new Set();
+
+        for (let hit of this.prevHits) {
+            hitSet.add(JSON.stringify(hit));
+            const upperRow = hit.row - 1;
+            const lowerRow = hit.row + 1;
+            const leftCol = hit.col - 1;
+            const rightCol = hit.col + 1;
+
+            if (0 <= upperRow && upperRow < this.board.board.length) {
+                const pos = this.board.board[upperRow][hit.col];
+                if (pos === this.board.hitSymbol) {
+                    newHits.push({"row": upperRow, "col": hit.col});
+                }
+            }
+            if (0 <= lowerRow && lowerRow < this.board.board.length) {
+                const pos = this.board.board[lowerRow][hit.col];
+                if (pos === this.board.hitSymbol) {
+                    newHits.push({"row": lowerRow, "col": hit.col});
+                }
+            }
+            if (0 <= leftCol && leftCol < this.board.board[0].length) {
+                const pos = this.board.board[hit.row][leftCol];
+                if (pos === this.board.hitSymbol) {
+                    newHits.push({"row": hit.row, "col": leftCol});
+                }
+            }
+            if (0 <= rightCol && rightCol < this.board.board[0].length) {
+                const pos = this.board.board[hit.row][rightCol];
+                if (pos === this.board.hitSymbol) {
+                    newHits.push({"row": hit.row, "col": rightCol});
+                }
+            }
+        }
+
+
+        for (let newHit of newHits) {
+            if (!hitSet.has(JSON.stringify(newHit))) {
+                this.prevHits.push(newHit);
+            }
+        }
     };
 };
 
