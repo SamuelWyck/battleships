@@ -279,13 +279,14 @@ class Computer {
 
         if (attack === undefined) {
             if (this.#areAdjacentHits()) {
-                // this.#handleSkip();
+                this.#handleSkip();
                 // this.heatMap.resetProbability();
                 // this.heatMap.calculateTargetProbability(this.prevHits, this.shipLengthsToFind);
                 // const attackList = this.heatMap.getBestAttacksList();
                 // const randomIdx = this.#randInt(0, attackList.length - 1);
                 // attack = attackList[randomIdx];
-                attack = this.#searchHit();
+                attack = this.#getNextHit();
+                attack = (attack === null) ? undefined : attack;
             }
         }
         if (attack === undefined) {
@@ -303,8 +304,80 @@ class Computer {
     };
 
 
-    #searchHit() {
-        
+    #getNextHit() {
+        let minRow = Infinity;
+        let maxRow = -Infinity;
+        let minCol = Infinity;
+        let maxCol = -Infinity;
+        for (let prevHit of this.prevHits) {
+            minRow = Math.min(prevHit.row, minRow);
+            maxRow = Math.max(prevHit.row, maxRow);
+            minCol = Math.min(prevHit.col, minCol);
+            maxCol = Math.max(prevHit.col, maxCol);
+        }
+
+        const orderChoice = this.#randInt(0, 1);
+
+        if (orderChoice === 0) {
+            if (minCol === maxCol) {
+                const coord = this.#getVerticalHit(minRow, maxRow, minCol);
+                if (coord !== null) {
+                    return coord;
+                }
+            } 
+            return this.#getHorizontalHit(minRow, minCol, maxCol);
+
+        } else {
+            if (minRow === maxRow) {
+                const coord = this.#getHorizontalHit(minRow, minCol, maxCol);
+                if (coord !== null) {
+                    return coord;
+                }
+            }
+            return this.#getVerticalHit(minRow, maxRow, minCol);
+        }
+    };
+
+
+    #getVerticalHit(minRow, maxRow, minCol) {
+        const row = minRow - 1;
+        const col = minCol;
+
+        const rowValid = 0 <= row && row < this.radar.board.length;
+        const colValid = 0 <= col && col < this.radar.board[0].length;
+        if (!rowValid || !colValid || this.radar.board[row][col] !== this.radar.emptySymbol) {
+            const otherRow = maxRow + 1;
+
+            const otherRowValid = 0 <= otherRow && otherRow < this.radar.board.length;
+            if (otherRowValid && this.radar.board[otherRow][col] === this.radar.emptySymbol) {
+                return {"row": otherRow, "col": col};
+            } else {
+                return null;
+            }
+        }
+
+        return {"row": row, "col": col};
+    };
+
+
+    #getHorizontalHit(minRow, minCol, maxCol) {
+        const row = minRow;
+        const col = minCol - 1;
+
+        const rowValid = 0 <= row && row < this.radar.board.length;
+        const colValid = 0 <= col && col < this.radar.board[0].length;
+        if (!rowValid || !colValid || this.radar.board[row][col] !== this.radar.emptySymbol) {
+            const otherCol = maxCol + 1;
+
+            const otherColValid = 0 <= otherCol && otherCol < this.radar.board[0].length;
+            if (otherColValid && this.radar.board[row][otherCol] === this.radar.emptySymbol) {
+                return {"row": row, "col": otherCol};
+            } else {
+                return null;
+            }
+        }
+
+        return {"row": row, "col": col};
     };
 
 
@@ -327,7 +400,7 @@ class Computer {
     #handleSkip() {
         const newHits = [];
         const hitSet = new Set();
-
+        //need to figure out why this method doesnt work
         for (let hit of this.prevHits) {
             hitSet.add(JSON.stringify(hit));
             const upperRow = hit.row - 1;
@@ -347,13 +420,13 @@ class Computer {
                     newHits.push({"row": lowerRow, "col": hit.col});
                 }
             }
-            if (0 <= leftCol && leftCol < this.board.board[0].length) {
+            if (0 <= leftCol && leftCol < this.board.board.length) {
                 const pos = this.board.board[hit.row][leftCol];
                 if (pos === this.board.hitSymbol) {
                     newHits.push({"row": hit.row, "col": leftCol});
                 }
             }
-            if (0 <= rightCol && rightCol < this.board.board[0].length) {
+            if (0 <= rightCol && rightCol < this.board.board.length) {
                 const pos = this.board.board[hit.row][rightCol];
                 if (pos === this.board.hitSymbol) {
                     newHits.push({"row": hit.row, "col": rightCol});
@@ -367,6 +440,8 @@ class Computer {
                 this.prevHits.push(newHit);
             }
         }
+        console.log(newHits)
+        console.log(this.prevHits)
     };
 };
 
