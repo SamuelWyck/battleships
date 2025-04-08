@@ -13,6 +13,10 @@ class Computer {
         this.heatMap.calculateProbability(this.shipLengthsToFind);
         this.shipList = [2, 3, 3, 4, 5];
         this.prevHits = [];
+        this.savedPrevHits = [];
+        this.sunkShips = [];
+        this.lengthCollsion = false;
+        this.searchedLength = 0;
     };
 
 
@@ -22,9 +26,12 @@ class Computer {
         this.heatMap.clearBoard();
         this.shipList = [2, 3, 3, 4, 5];
         this.prevHits = [];
+        this.savedPrevHits = [];
+        this.lengthCollsion = false;
+        this.searchedLength = 0;
         this.shipLengthsToFind = [2, 3, 3, 4, 5];
+        this.sunkShips = [];
         this.heatMap.calculateProbability(this.shipLengthsToFind);
-        console.log(this.heatMap.board)
     };
 
 
@@ -63,34 +70,201 @@ class Computer {
         this.heatMap.resetProbability();
         if (hit && !sunk) {
             this.prevHits.push({"row": row, "col": col});
-            this.heatMap.calculateTargetProbability(this.prevHits, this.shipLengthsToFind);
         } else if (hit && sunk) {
             this.#cleanPrevHits({"row": row, "col": col});
-            this.prevHits = [];
+        }
+
+        if (this.prevHits.length === 0) {
             this.heatMap.calculateProbability(this.shipLengthsToFind);
-        } else if (!hit && this.prevHits.length > 0) {
-            this.heatMap.calculateTargetProbability(this.prevHits, this.shipLengthsToFind);
         } else {
-            this.heatMap.calculateProbability(this.shipLengthsToFind);
+            this.heatMap.calculateTargetProbability(this.prevHits, this.shipLengthsToFind);
         }
     };
 
 
     #cleanPrevHits(sinkingHit) {
-        if (this.prevHits.length + 1 > 5) {
-            const otherShip = this.#findOtherShip(this.prevHits.slice(), sinkingHit);
+        
+        const shipCoords = this.#getShipCoords(sinkingHit);
+        let beforeLength = this.shipLengthsToFind.length;
+        let substituteLength = false;
+
+        if (this.lengthCollsion) {
+            const coordSet = new Set();
+            for (let coord of shipCoords) {
+                coordSet.add(JSON.stringify(coord));
+            }
+            for (let sunkShip of this.sunkShips) {
+                if (sunkShip.length === this.searchedLength && coordSet.has(sunkShip.possibleOtherShip)) {
+                    sunkShip.length = -1;
+                    break;
+                }
+            }
+            this.prevHits = this.savedPrevHits.slice();
+            this.savedPrevHits = [];
+            beforeLength = (shipCoords.length === 2) ? this.shipLengthsToFind.length - 1 : this.shipLengthsToFind.length;
+            if (beforeLength === this.shipLengthsToFind.length) {
+                this.#removeShipLength(shipCoords.length);
+            } else {
+                substituteLength = true;
+            }
+        } else {
+            this.#removeShipCoords(shipCoords);
+            beforeLength = this.shipLengthsToFind.length;
+            this.#removeShipLength(shipCoords.length);
         }
 
-        const beforeLength = this.shipLengthsToFind.length;
-        this.#removeShipLength(this.prevHits.length);
-        if (beforeLength === this.shipLengthsToFind.length) {
 
+        if (shipCoords.length > 5) {
+            const otherShipCoord = this.#findOtherShip(sinkingHit, shipCoords);
+            console.log(otherShipCoord)
+            this.prevHits.push(otherShipCoord);
+
+        } else if (this.shipLengthsToFind.length === beforeLength) {
+            this.savedPrevHits = this.prevHits.slice();
+            this.prevHits = [];
+            this.lengthCollsion = true;
+            this.searchedLength = shipCoords.length;
+            this.sunkShips.push({
+                "coords": shipCoords, 
+                "length": shipCoords.length, 
+                "sinkingHit": sinkingHit,
+                "possibleOtherShip": this.#findOtherShip(sinkingHit, shipCoords)
+            });
+            for (let sunkShip of this.sunkShips) {
+                if (sunkShip.length !== shipCoords.length) {
+                    continue;
+                }
+                this.prevHits.push(sunkShip.possibleOtherShip);
+            }
+
+        } else {
+            this.sunkShips.push({
+                "coords": shipCoords, 
+                "length": (substituteLength) ? -1 : shipCoords.length, 
+                "sinkingHit": sinkingHit,
+                "possibleOtherShip": this.#findOtherShip(sinkingHit, shipCoords)
+            });
+        }
+        
+    };
+
+
+    #notBiggerShip(ship) {
+        const finalCoord = ship.possibleOtherShip;
+        const startCoord = ship.sinkingHit;
+        const vertical = finalCoord.col === startCoord.col;
+        
+        if (vertical) {
+            const rowChange = (finalCoord.row < startCoord.row) ? -1 : 1;
+            const newRow = finalCoord.row + rowChange;
+
+            const rowValid = 0 <= newRow && newRow < this.board.board.length;
+            if (rowValid && this.board.board[newRow][finalCoord.col] === this.board.hitSymbol) {
+                return false;
+            }
+            return true;
+        } else {
+            const colChange = (finalCoord.col < startCoord.col) ? -1 : 1;
+            const newCol = finalCoord.col + colChange;
+
+            const colValid = 0 <= newCol && newCol < this.board.board[0].length;
+            if (colValid && this.board.board[finalCoord.row][newCol] === this.board.hitSymbol) {
+                return false;
+            }
+            return true;
         }
     };
 
 
-    #findOtherShip(prevHits, sinkingHit) {
-        //figure out how to get from the sinking hit to the hit farthest away from it
+    #removeShipCoords(shipCoords) {
+        const coordSet = new Set();
+        for (let coord of shipCoords) {
+            coordSet.add(JSON.stringify(coord));
+        }
+
+        const newArray = [];
+        for (let hit of this.prevHits) {
+            const key = JSON.stringify(hit);
+            if (!coordSet.has(key)) {
+                newArray.push(hit);
+            }
+        }
+
+        this.prevHits = newArray;
+    };
+
+
+    #getShipCoords(sinkingHit) {
+        const coords = [sinkingHit];
+        this.#collectShipCoords(sinkingHit, this.prevHits.slice(), coords, null);
+        return coords;
+    };
+
+
+    #collectShipCoords(currentHit, hitList, coords, rowChanges) {
+        if (hitList.length === 0) {
+            return;
+        }
+
+        const row = currentHit.row;
+        const col = currentHit.col;
+
+        if (rowChanges === null) {
+            for (let hit of hitList) {
+                const rowChange = Math.abs(row - hit.row);
+                const colChange = Math.abs(col - hit.col);
+                if ((rowChange === 1 && colChange === 0) || (colChange === 1 && rowChange === 0)) {
+                    coords.push(hit);
+                    hitList = this.#removeHit(hit, hitList);
+                    this.#collectShipCoords(hit, hitList, coords, rowChange === 1);
+                    break;
+                }
+            }
+        } else {
+            for (let hit of hitList) {
+                const rowChange = Math.abs(row - hit.row);
+                const colChange = Math.abs(col - hit.col);
+                if ((rowChanges && rowChange === 1 && colChange === 0) || 
+                    (!rowChanges && colChange === 1 && rowChange === 0)) {
+                    coords.push(hit);
+                    hitList = this.#removeHit(hit, hitList);
+                    this.#collectShipCoords(hit, hitList, coords, rowChanges);
+                    break;
+                } 
+            }
+        }
+    };
+
+
+    #removeHit(targetHit, hitList) {
+        const newArray = [];
+        for (let hit of hitList) {
+            if (hit.row === targetHit.row && hit.col === targetHit.col) {
+                continue;
+            }
+            newArray.push(hit);
+        }
+        return newArray;
+    };
+
+
+    #findOtherShip(sinkingHit, shipCoords) {
+        return this.#getPossibleShip(sinkingHit, shipCoords, new Set());
+    };
+
+
+    #getPossibleShip(currentHit, shipCoords, visited) {
+
+        for (let coord of shipCoords) {
+            const rowChange = Math.abs(coord.row - currentHit.row);
+            const colChange = Math.abs(coord.col - currentHit.col);
+            if ((rowChange === 1 || colChange === 1) && !visited.has(JSON.stringify(coord))) {
+                visited.add(JSON.stringify(currentHit));
+                return this.#getPossibleShip(coord, shipCoords, visited);
+            }
+        }
+        
+        return currentHit;
     };
 
 
@@ -110,160 +284,22 @@ class Computer {
 
 
     makeAttack() {
-        // if (this.shipLengthsToFind.length === 0) {
-        //     return;
-        // }
-        // if (this.sightedShips.length > 0) {
-        //     return this.#getNextHit(this.sightedShips[0]);
-        // } else {
-        //     const attackList = this.heatMap.getBestAttacksList();
-        //     const randomIdx = this.#randInt(0, attackList.length - 1);
-        //     return attackList[randomIdx];
-        // }
         const attackList = this.heatMap.getBestAttacksList();
         const randomIdx = this.#randInt(0, attackList.length - 1);
-        return attackList[randomIdx];
-    };
+        const attack =  attackList[randomIdx];
 
-
-    #getNextHit(ship) {
-        let minRow = Infinity;
-        let maxRow = -Infinity;
-        let minCol = Infinity;
-        let maxCol = -Infinity;
-        for (let prevHit of this.prevHits) {
-            if (prevHit.ship === ship) {
-                minRow = Math.min(prevHit.row, minRow);
-                maxRow = Math.max(prevHit.row, maxRow);
-                minCol = Math.min(prevHit.col, minCol);
-                maxCol = Math.max(prevHit.col, maxCol);
-            }
+        if (attack === undefined) {
+            this.prevHits = this.savedPrevHits.slice();
+            this.savedPrevHits = [];
+            this.lengthCollsion = false;
+            this.heatMap.resetProbability();
+            this.heatMap.calculateProbability(this.shipLengthsToFind);
+            const attackList = this.heatMap.getBestAttacksList();
+            const randomIdx = this.#randInt(0, attackList.length - 1);
+            return attackList[randomIdx];
         }
 
-        const orderChoice = this.#randInt(0, 1);
-
-        if (orderChoice === 0) {
-            if (minCol === maxCol) {
-                const coord = this.#getVerticalHit(minRow, maxRow, minCol);
-                if (coord !== null) {
-                    return coord;
-                }
-            } 
-            return this.#getHorizontalHit(minRow, minCol, maxCol);
-
-        } else {
-            if (minRow === maxRow) {
-                const coord = this.#getHorizontalHit(minRow, minCol, maxCol);
-                if (coord !== null) {
-                    return coord;
-                }
-            }
-            return this.#getVerticalHit(minRow, maxRow, minCol);
-        }
-    };
-
-
-    #getVerticalHit(minRow, maxRow, minCol) {
-        const row = minRow - 1;
-        const col = minCol;
-
-        const rowValid = 0 <= row && row < this.radar.board.length;
-        const colValid = 0 <= col && col < this.radar.board[0].length;
-        if (!rowValid || !colValid || this.radar.board[row][col] !== this.radar.emptySymbol) {
-            const otherRow = maxRow + 1;
-
-            const otherRowValid = 0 <= otherRow && otherRow < this.radar.board.length;
-            if (otherRowValid && this.radar.board[otherRow][col] === this.radar.emptySymbol) {
-                return {"row": otherRow, "col": col};
-            } else {
-                return null;
-            }
-        }
-
-        return {"row": row, "col": col};
-    };
-
-
-    #getHorizontalHit(minRow, minCol, maxCol) {
-        const row = minRow;
-        const col = minCol - 1;
-
-        const rowValid = 0 <= row && row < this.radar.board.length;
-        const colValid = 0 <= col && col < this.radar.board[0].length;
-        if (!rowValid || !colValid || this.radar.board[row][col] !== this.radar.emptySymbol) {
-            const otherCol = maxCol + 1;
-
-            const otherColValid = 0 <= otherCol && otherCol < this.radar.board[0].length;
-            if (otherColValid && this.radar.board[row][otherCol] === this.radar.emptySymbol) {
-                return {"row": row, "col": otherCol};
-            } else {
-                return null;
-            }
-        }
-
-        return {"row": row, "col": col};
-    };
-
-
-    #enoughSpace(row, col) {
-        let minLength = Infinity;
-        for (let length of this.shipLengthsToFind) {
-            minLength = Math.min(minLength, length);
-        }
-
-        const verticalChange = [
-            {"rowChange": -1, "colChange": 0},
-            {"rowChange": 1, "colChange": 0},
-        ];
-        const horizontalChange = [
-            {"rowChange": 0, "colChange": -1},
-            {"rowChange": 0, "colChange": 1},
-        ];
-        const positionChanges = [verticalChange, horizontalChange];
-
-        for (let positionChange of positionChanges) {
-            if (this.#spaceFree(row, col, minLength, 1, positionChange, new Set())) {
-                return true;
-            }
-        }
-        return false;
-    };
-
-
-    #spaceFree(row, col, targetlength, currentLength, posChange, visited) {
-        const rowValid = 0 <= row && row < this.radar.board.length;
-        const colValid = 0 <= col && col < this.radar.board[0].length;
-        if (!rowValid || !colValid) {
-            return false;
-        }
-        const key = JSON.stringify([row, col]);
-        if (visited.has(key)) {
-            return false;
-        }
-        if (this.radar.board[row][col] !== this.radar.emptySymbol) {
-            return false;
-        }
-        if (currentLength === targetlength) {
-            return true;
-        }
-
-        visited.add(key);
-
-        const firstChange = posChange[0];
-        const secondChange = posChange[1];
-
-        const firstResult = this.#spaceFree(
-            row + firstChange.rowChange, col + firstChange.colChange, 
-            targetlength, currentLength + 1, posChange, visited
-        );
-        if (firstResult) {
-            return true;
-        }
-
-        return this.#spaceFree(
-            row + secondChange.rowChange, col + secondChange.colChange,
-            targetlength, currentLength + 1, posChange, visited
-        );
+        return attack;
     };
 };
 
