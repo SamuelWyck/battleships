@@ -240,7 +240,6 @@ const game = (function() {
             }
             player.placeShips();
             manager.placePlayerShips(player.board.board);
-            console.log(player.board.board)
         }
     };
 })();
