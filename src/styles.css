@@ -354,6 +354,7 @@ div.board-cell-marker.miss, div.radar-cell-marker.miss {
     border: 2px outset #233329;
     background-color: #233329;
     color: #c1e3a2;
+    cursor: pointer;
 }
 
 .exit-btn-div > button:hover {
