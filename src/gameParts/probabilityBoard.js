@@ -164,7 +164,6 @@ class ProbabilityBoard {
         }
 
         const cell = this.board[row][col];
-        const key = JSON.stringify({"row": row, "col": col});
         if (cell.miss) {
             return false;
         }
