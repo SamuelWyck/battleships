@@ -20,6 +20,8 @@ const game = (function() {
     let gameStarted = false;
     let gameOver = false;
 
+    let firstLengthThreeName = "";
+
 
     function shipDrag(event) {
         if (!gameStarted) {
@@ -173,7 +175,7 @@ const game = (function() {
                     player.radar.recordAttack(row, col, hit);
                     return;
                 } else {
-                    manager.showPopup("Ship Sunk!")
+                    showShipSunk(shipLength);
                 }
             } 
         } else {
@@ -181,6 +183,29 @@ const game = (function() {
         }
         player.radar.recordAttack(row, col, hit);
         computerGuess();
+    };
+
+
+    function showShipSunk(length) {
+        let ship = "Ship";
+        
+        if (length === 2) {
+            ship = "Patrol Boat";
+        } else if (length === 3) {
+            if (firstLengthThreeName === "") {
+                const choice = Math.random();
+                ship = (choice < .5) ? "Submarine" : "Destroyer";
+                firstLengthThreeName = ship;
+            } else {
+                ship = (firstLengthThreeName === "Submarine") ? "Destroyer" : "Submarine";
+            }
+        } else if (length === 4) {
+            ship = "Battleship";
+        } else {
+            ship = "Carrier";
+        }
+
+        manager.showPopup(`${ship} Sunk!`);
     };
 
 
@@ -229,6 +254,7 @@ const game = (function() {
         manager.clearRadarBoard();
         gameStarted = false;
         gameOver = false
+        firstLengthThreeName = "";
     };
 
 
