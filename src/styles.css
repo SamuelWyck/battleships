@@ -17,7 +17,7 @@ html {
     font-size: 16px;
 }
 
-header {
+header, footer {
     display: flex;
     justify-content: space-evenly;
     align-items: center;
@@ -25,6 +25,10 @@ header {
     background-color: #7E8D85;
     background-image: linear-gradient(180deg, #233329, #7E8D85, #233329);
     padding-bottom: .05rem;
+}
+
+footer {
+    padding: 1rem 0;
 }
 
 header span {
