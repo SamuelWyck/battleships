@@ -34,6 +34,11 @@ class PopUp {
     hidePopup() {
         this.popup.classList.add(this.hideClass);
     };
+
+
+    isShowing() {
+        return !this.popup.classList.contains(this.hideClass);
+    }
 };
 
 
