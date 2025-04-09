@@ -91,6 +91,16 @@ header button:hover, .choice-selected {
     margin: 3rem 2rem 2rem 2rem;
 }
 
+.boards-div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+}
+
 .board, .radar {
     display: grid;
     grid-template-columns: repeat(11, min-content);
