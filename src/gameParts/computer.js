@@ -13,10 +13,6 @@ class Computer {
         this.heatMap.calculateProbability(this.shipLengthsToFind);
         this.shipList = [2, 3, 3, 4, 5];
         this.prevHits = [];
-        this.savedPrevHits = [];
-        this.sunkShips = [];
-        this.lengthCollsion = false;
-        this.searchedLength = 0;
     };
 
 
@@ -26,11 +22,7 @@ class Computer {
         this.heatMap.clearBoard();
         this.shipList = [2, 3, 3, 4, 5];
         this.prevHits = [];
-        this.savedPrevHits = [];
-        this.lengthCollsion = false;
-        this.searchedLength = 0;
         this.shipLengthsToFind = [2, 3, 3, 4, 5];
-        this.sunkShips = [];
         this.heatMap.calculateProbability(this.shipLengthsToFind);
     };
 
@@ -71,6 +63,7 @@ class Computer {
         if (hit && !sunk) {
             this.prevHits.push({"row": row, "col": col});
         } else if (hit && sunk) {
+            this.prevHits.push({"row": row, "col": col});
             this.#cleanPrevHits({"row": row, "col": col}, length);
         }
 
@@ -82,83 +75,15 @@ class Computer {
     };
 
 
-    #cleanPrevHits(sinkingHit, shipLength) {
-        
-        const shipCoords = this.#getShipCoords(sinkingHit);
-        let beforeLength = this.shipLengthsToFind.length;
-        let substituteLength = false;
+    #cleanPrevHits(sinkingHit, shipLength) {  
+        this.#removeShipLength(shipLength);
 
-        if (this.lengthCollsion) {
-            const [newBefore, newSub] = this.#handleLengthCollision(shipCoords, beforeLength, substituteLength);
-            beforeLength = newBefore;
-            substituteLength = newSub;
+        if (this.prevHits.length === shipLength) {
+            this.prevHits = [];
         } else {
+            const shipCoords = this.#getShipCoords(sinkingHit, shipLength);
             this.#removeShipCoords(shipCoords);
-            beforeLength = this.shipLengthsToFind.length;
-            this.#removeShipLength(shipCoords.length);
         }
-
-
-        if (shipCoords.length > 5) {
-            const otherShipCoord = this.#findOtherShip(sinkingHit, shipCoords);
-            console.log(otherShipCoord)
-            this.prevHits.push(otherShipCoord);
-
-        } else if (this.shipLengthsToFind.length === beforeLength) {
-            this.#handleCollisionSearch(shipCoords, sinkingHit);
-
-        } else {
-            this.sunkShips.push({
-                "coords": shipCoords, 
-                "length": (substituteLength || shipCoords.length === 2) ? -1 : shipCoords.length, 
-                "sinkingHit": sinkingHit,
-                "possibleOtherShip": this.#findOtherShip(sinkingHit, shipCoords)
-            });
-        }
-        
-    };
-
-
-    #handleCollisionSearch(shipCoords, sinkingHit) {
-        this.savedPrevHits = this.prevHits.slice();
-        this.prevHits = [];
-        this.lengthCollsion = true;
-        this.searchedLength = shipCoords.length;
-        this.sunkShips.push({
-            "coords": shipCoords, 
-            "length": shipCoords.length, 
-            "sinkingHit": sinkingHit,
-            "possibleOtherShip": this.#findOtherShip(sinkingHit, shipCoords)
-        });
-        for (let sunkShip of this.sunkShips) {
-            if (sunkShip.length !== shipCoords.length) {
-                continue;
-            }
-            this.prevHits.push(sunkShip.possibleOtherShip);
-        }
-    };
-
-
-    #handleLengthCollision(shipCoords, beforeLength, substituteLength) {
-        const coordSet = new Set();
-        for (let coord of shipCoords) {
-            coordSet.add(JSON.stringify(coord));
-        }
-        for (let sunkShip of this.sunkShips) {
-            if (sunkShip.length === this.searchedLength && coordSet.has(sunkShip.possibleOtherShip)) {
-                sunkShip.length = -1;
-                break;
-            }
-        }
-        this.prevHits = this.savedPrevHits.slice();
-        this.savedPrevHits = [];
-        beforeLength = (shipCoords.length === 2) ? this.shipLengthsToFind.length - 1 : this.shipLengthsToFind.length;
-        if (beforeLength === this.shipLengthsToFind.length) {
-            this.#removeShipLength(shipCoords.length);
-        } else {
-            substituteLength = true;
-        }
-        return [beforeLength, substituteLength];
     };
 
 
@@ -180,84 +105,44 @@ class Computer {
     };
 
 
-    #getShipCoords(sinkingHit) {
-        const coords = [sinkingHit];
-        this.#collectShipCoords(sinkingHit, this.prevHits.slice(), coords, null);
-        return coords;
+    #getShipCoords(sinkingHit, shipLength) {
+        const directions = [
+            {"rowChange": -1, "colChange": 0},
+            {"rowChange": 1, "colChange": 0},
+            {"rowChange": 0, "colChange": -1},
+            {"rowChange": 0, "colChange": 1},
+        ];
+
+        for (let direction of directions) {
+            const coords = [];
+            this.#collectShipCoords(sinkingHit, this.prevHits.slice(), coords, 0, shipLength, direction);
+            if (coords.length === shipLength) {
+                return coords;
+            }
+        }
+        return null;
     };
 
 
-    #collectShipCoords(currentHit, hitList, coords, rowChanges) {
-        if (hitList.length === 0) {
+    #collectShipCoords(currentHit, prevHits, shipCoords, currentLength, targetlength, posChange) {
+        if (currentLength === targetlength) {
             return;
         }
 
-        const row = currentHit.row;
-        const col = currentHit.col;
+        shipCoords.push(currentHit);
 
-        if (rowChanges === null) {
-            for (let hit of hitList) {
-                const rowChange = Math.abs(row - hit.row);
-                const colChange = Math.abs(col - hit.col);
-                if ((rowChange === 1 && colChange === 0) || (colChange === 1 && rowChange === 0)) {
-                    coords.push(hit);
-                    hitList = this.#removeHit(hit, hitList);
-                    this.#collectShipCoords(hit, hitList, coords, rowChange === 1);
-                    break;
-                }
-            }
-        } else {
-            for (let hit of hitList) {
-                const rowChange = Math.abs(row - hit.row);
-                const colChange = Math.abs(col - hit.col);
-                if ((rowChanges && rowChange === 1 && colChange === 0) || 
-                    (!rowChanges && colChange === 1 && rowChange === 0)) {
-                    coords.push(hit);
-                    hitList = this.#removeHit(hit, hitList);
-                    this.#collectShipCoords(hit, hitList, coords, rowChanges);
-                    break;
-                } 
+        const neighborHit = {"row": currentHit.row + posChange.rowChange, "col": currentHit.col + posChange.colChange};
+
+        for (let hit of prevHits) {
+            if (hit.row === neighborHit.row && hit.col === neighborHit.col) {
+                this.#collectShipCoords(hit, prevHits, shipCoords, currentLength + 1, targetlength, posChange);
+                break;
             }
         }
-    };
-
-
-    #removeHit(targetHit, hitList) {
-        const newArray = [];
-        for (let hit of hitList) {
-            if (hit.row === targetHit.row && hit.col === targetHit.col) {
-                continue;
-            }
-            newArray.push(hit);
-        }
-        return newArray;
-    };
-
-
-    #findOtherShip(sinkingHit, shipCoords) {
-        return this.#getPossibleShip(sinkingHit, shipCoords, new Set());
-    };
-
-
-    #getPossibleShip(currentHit, shipCoords, visited) {
-
-        for (let coord of shipCoords) {
-            const rowChange = Math.abs(coord.row - currentHit.row);
-            const colChange = Math.abs(coord.col - currentHit.col);
-            if ((rowChange === 1 || colChange === 1) && !visited.has(JSON.stringify(coord))) {
-                visited.add(JSON.stringify(currentHit));
-                return this.#getPossibleShip(coord, shipCoords, visited);
-            }
-        }
-
-        return currentHit;
     };
 
 
     #removeShipLength(shipLength) {
-        if (shipLength === 2) {
-            return true;
-        }
         const newArray = [];
         let found = false;
         for (let length of this.shipLengthsToFind) {
@@ -275,245 +160,7 @@ class Computer {
     makeAttack() {
         let attackList = this.heatMap.getBestAttacksList();
         let randomIdx = this.#randInt(0, attackList.length - 1);
-        let attack =  attackList[randomIdx];
-
-        if (attack === undefined) {
-            this.prevHits = this.savedPrevHits.slice();
-            this.savedPrevHits = [];
-            this.lengthCollsion = false;
-            this.heatMap.resetProbability();
-            this.heatMap.calculateProbability(this.shipLengthsToFind);
-            attackList = this.heatMap.getBestAttacksList();
-            randomIdx = this.#randInt(0, attackList.length - 1);
-            attack = attackList[randomIdx];
-        }
-
-        return attack;
-    };
-
-
-    #getNextHit() {
-        let minRow = Infinity;
-        let maxRow = -Infinity;
-        let minCol = Infinity;
-        let maxCol = -Infinity;
-        for (let prevHit of this.prevHits) {
-            minRow = Math.min(prevHit.row, minRow);
-            maxRow = Math.max(prevHit.row, maxRow);
-            minCol = Math.min(prevHit.col, minCol);
-            maxCol = Math.max(prevHit.col, maxCol);
-        }
-
-        const orderChoice = this.#randInt(0, 1);
-
-        if (orderChoice === 0) {
-            if (minCol === maxCol) {
-                const coord = this.#getVerticalHit(minRow, maxRow, minCol);
-                if (coord !== null) {
-                    return coord;
-                }
-            } 
-            return this.#getHorizontalHit(minRow, minCol, maxCol);
-
-        } else {
-            if (minRow === maxRow) {
-                const coord = this.#getHorizontalHit(minRow, minCol, maxCol);
-                if (coord !== null) {
-                    return coord;
-                }
-            }
-            return this.#getVerticalHit(minRow, maxRow, minCol);
-        }
-    };
-
-
-    #getVerticalHit(minRow, maxRow, minCol) {
-        const row = minRow - 1;
-        const col = minCol;
-
-        const rowValid = 0 <= row && row < this.radar.board.length;
-        const colValid = 0 <= col && col < this.radar.board[0].length;
-        if (!rowValid || !colValid || this.radar.board[row][col] !== this.radar.emptySymbol) {
-            const otherRow = maxRow + 1;
-
-            const otherRowValid = 0 <= otherRow && otherRow < this.radar.board.length;
-            if (otherRowValid && this.radar.board[otherRow][col] === this.radar.emptySymbol) {
-                return {"row": otherRow, "col": col};
-            } else {
-                return null;
-            }
-        }
-
-        return {"row": row, "col": col};
-    };
-
-
-    #getHorizontalHit(minRow, minCol, maxCol) {
-        const row = minRow;
-        const col = minCol - 1;
-
-        const rowValid = 0 <= row && row < this.radar.board.length;
-        const colValid = 0 <= col && col < this.radar.board[0].length;
-        if (!rowValid || !colValid || this.radar.board[row][col] !== this.radar.emptySymbol) {
-            const otherCol = maxCol + 1;
-
-            const otherColValid = 0 <= otherCol && otherCol < this.radar.board[0].length;
-            if (otherColValid && this.radar.board[row][otherCol] === this.radar.emptySymbol) {
-                return {"row": row, "col": otherCol};
-            } else {
-                return null;
-            }
-        }
-
-        return {"row": row, "col": col};
-    };
-
-
-    #areAdjacentHits() {
-        if (this.prevHits.length === 1) {
-            return [true, this.prevHits.slice()];
-        }
-
-        const savePrevHits = this.prevHits;
-        this.prevHits = this.prevHits.slice(0, -1);
-        const coords = this.#getShipCoords(savePrevHits[savePrevHits.length - 1]);
-        this.prevHits = savePrevHits;
-        if (coords.length >= 2) {
-            return [true, coords];
-        }
-        return [false, null];
-    };
-
-
-    #handleSkip() {
-        const newHits = [];
-        const hitSet = new Set();
-        for (let hit of coords) {
-            hitSet.add(JSON.stringify(hit));
-            const upperRow = hit.row - 1;
-            const lowerRow = hit.row + 1;
-            const leftCol = hit.col - 1;
-            const rightCol = hit.col + 1;
-
-            if (0 <= upperRow && upperRow < this.board.board.length) {
-                const pos = this.board.board[upperRow][hit.col];
-                if (pos === this.board.hitSymbol) {
-                    newHits.push({"row": upperRow, "col": hit.col});
-                }
-            }
-            if (0 <= lowerRow && lowerRow < this.board.board.length) {
-                const pos = this.board.board[lowerRow][hit.col];
-                if (pos === this.board.hitSymbol) {
-                    newHits.push({"row": lowerRow, "col": hit.col});
-                }
-            }
-            if (0 <= leftCol && leftCol < this.board.board.length) {
-                const pos = this.board.board[hit.row][leftCol];
-                if (pos === this.board.hitSymbol) {
-                    newHits.push({"row": hit.row, "col": leftCol});
-                }
-            }
-            if (0 <= rightCol && rightCol < this.board.board.length) {
-                const pos = this.board.board[hit.row][rightCol];
-                if (pos === this.board.hitSymbol) {
-                    newHits.push({"row": hit.row, "col": rightCol});
-                }
-            }
-        }
-
-
-        for (let newHit of newHits) {
-            if (!hitSet.has(JSON.stringify(newHit))) {
-                this.prevHits.push(newHit);
-            }
-        }
-        console.log(newHits)
-        console.log(this.prevHits)
-    };
-
-
-    #exploreCoords(coords) {
-        let minRow = Infinity;
-        let maxRow = -Infinity;
-        let minCol = Infinity;
-        let maxCol = -Infinity;
-        for (let prevHit of coords) {
-            minRow = Math.min(prevHit.row, minRow);
-            maxRow = Math.max(prevHit.row, maxRow);
-            minCol = Math.min(prevHit.col, minCol);
-            maxCol = Math.max(prevHit.col, maxCol);
-        }
-
-        const verticalChange = [
-            {"rowChange": -1, "colChange": 0},
-            {"rowChange": 1, "colChange": 0},
-        ];
-        const horizontalChange = [
-            {"rowChange": 0, "colChange": -1},
-            {"rowChange": 0, "colChange": 1},
-        ];
-
-        const beforeLength = this.prevHits.length;
-
-        const prevHitSet = new Set();
-        for (let hit of this.prevHits) {
-            prevHitSet.add(JSON.stringify(hit));
-        }
-
-
-        if (minRow === maxRow) {
-            for (let hit of coords) {
-                this.#exploreCoordsRec(hit.row, hit.col, horizontalChange, new Set(), prevHitSet);
-            }
-            if (beforeLength > this.prevHits.length) {
-                return;
-            }
-            for (let hit of coords) {
-                this.#exploreCoordsRec(hit.row, hit.col, verticalChange, new Set(), prevHitSet);
-            }
-            return;
-        } else {
-            for (let hit of coords) {
-                this.#exploreCoordsRec(hit.row, hit.col, verticalChange, new Set(), prevHitSet);
-            }
-            if (beforeLength > this.prevHits.length) {
-                return;
-            }
-            for (let hit of coords) {
-                this.#exploreCoordsRec(hit.row, hit.col, horizontalChange, new Set(), prevHitSet);
-            }
-            return;
-        }
-    };
-
-
-    #exploreCoordsRec(row, col, change, visited, prevHitSet) {
-        const rowValid = 0 <= row && row < this.board.board.length;
-        const colValid = 0 <= col && col < this.board.board[0].length;
-        if (!rowValid  || !colValid) {
-            return;
-        }
-        const key = JSON.stringify({"row": row, "col": col});
-        if (visited.has(key) || prevHitSet.has(key)) {
-            return;
-        }
-        if (this.board.board[row][col] !== this.board.hitSymbol) {
-            return;
-        }
-
-        visited.add(key);
-        this.prevHits.push({"row": row, "col": col});
-
-        const neighbors = [
-            [row + change[0].rowChange, col + change[0].colChange],
-            [row + change[1].rowChange, col + change[1].colChange],
-        ];
-
-        for (let neighbor of neighbors) {
-            const nr = neighbor[0];
-            const nc = neighbor[1];
-            this.#exploreCoordsRec(nr, nc, change, visited, prevHitSet);
-        }
+        return attackList[randomIdx];
     };
 };
 
