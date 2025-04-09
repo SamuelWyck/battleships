@@ -64,14 +64,14 @@ class Computer {
     };
 
 
-    recordAttack(row, col, hit, sunk) {
+    recordAttack(row, col, hit, sunk, length) {
         this.radar.recordAttack(row, col, hit);
         this.heatMap.recordAttack(row, col, hit);
         this.heatMap.resetProbability();
         if (hit && !sunk) {
             this.prevHits.push({"row": row, "col": col});
         } else if (hit && sunk) {
-            this.#cleanPrevHits({"row": row, "col": col});
+            this.#cleanPrevHits({"row": row, "col": col}, length);
         }
 
         if (this.prevHits.length === 0) {
@@ -82,7 +82,7 @@ class Computer {
     };
 
 
-    #cleanPrevHits(sinkingHit) {
+    #cleanPrevHits(sinkingHit, shipLength) {
         
         const shipCoords = this.#getShipCoords(sinkingHit);
         let beforeLength = this.shipLengthsToFind.length;
@@ -278,18 +278,6 @@ class Computer {
         let attack =  attackList[randomIdx];
 
         if (attack === undefined) {
-            if (this.#areAdjacentHits()) {
-                this.#handleSkip();
-                // this.heatMap.resetProbability();
-                // this.heatMap.calculateTargetProbability(this.prevHits, this.shipLengthsToFind);
-                // const attackList = this.heatMap.getBestAttacksList();
-                // const randomIdx = this.#randInt(0, attackList.length - 1);
-                // attack = attackList[randomIdx];
-                attack = this.#getNextHit();
-                attack = (attack === null) ? undefined : attack;
-            }
-        }
-        if (attack === undefined) {
             this.prevHits = this.savedPrevHits.slice();
             this.savedPrevHits = [];
             this.lengthCollsion = false;
@@ -297,7 +285,7 @@ class Computer {
             this.heatMap.calculateProbability(this.shipLengthsToFind);
             attackList = this.heatMap.getBestAttacksList();
             randomIdx = this.#randInt(0, attackList.length - 1);
-            return attackList[randomIdx];
+            attack = attackList[randomIdx];
         }
 
         return attack;
@@ -383,25 +371,24 @@ class Computer {
 
     #areAdjacentHits() {
         if (this.prevHits.length === 1) {
-            return true;
+            return [true, this.prevHits.slice()];
         }
 
         const savePrevHits = this.prevHits;
-        this.prevHits = this.prevHits.slice(1);
-        const coords = this.#getShipCoords(savePrevHits[0]);
+        this.prevHits = this.prevHits.slice(0, -1);
+        const coords = this.#getShipCoords(savePrevHits[savePrevHits.length - 1]);
         this.prevHits = savePrevHits;
-        if (coords.length === this.prevHits.length) {
-            return true;
+        if (coords.length >= 2) {
+            return [true, coords];
         }
-        return false;
+        return [false, null];
     };
 
 
     #handleSkip() {
         const newHits = [];
         const hitSet = new Set();
-        //need to figure out why this method doesnt work
-        for (let hit of this.prevHits) {
+        for (let hit of coords) {
             hitSet.add(JSON.stringify(hit));
             const upperRow = hit.row - 1;
             const lowerRow = hit.row + 1;
@@ -442,6 +429,91 @@ class Computer {
         }
         console.log(newHits)
         console.log(this.prevHits)
+    };
+
+
+    #exploreCoords(coords) {
+        let minRow = Infinity;
+        let maxRow = -Infinity;
+        let minCol = Infinity;
+        let maxCol = -Infinity;
+        for (let prevHit of coords) {
+            minRow = Math.min(prevHit.row, minRow);
+            maxRow = Math.max(prevHit.row, maxRow);
+            minCol = Math.min(prevHit.col, minCol);
+            maxCol = Math.max(prevHit.col, maxCol);
+        }
+
+        const verticalChange = [
+            {"rowChange": -1, "colChange": 0},
+            {"rowChange": 1, "colChange": 0},
+        ];
+        const horizontalChange = [
+            {"rowChange": 0, "colChange": -1},
+            {"rowChange": 0, "colChange": 1},
+        ];
+
+        const beforeLength = this.prevHits.length;
+
+        const prevHitSet = new Set();
+        for (let hit of this.prevHits) {
+            prevHitSet.add(JSON.stringify(hit));
+        }
+
+
+        if (minRow === maxRow) {
+            for (let hit of coords) {
+                this.#exploreCoordsRec(hit.row, hit.col, horizontalChange, new Set(), prevHitSet);
+            }
+            if (beforeLength > this.prevHits.length) {
+                return;
+            }
+            for (let hit of coords) {
+                this.#exploreCoordsRec(hit.row, hit.col, verticalChange, new Set(), prevHitSet);
+            }
+            return;
+        } else {
+            for (let hit of coords) {
+                this.#exploreCoordsRec(hit.row, hit.col, verticalChange, new Set(), prevHitSet);
+            }
+            if (beforeLength > this.prevHits.length) {
+                return;
+            }
+            for (let hit of coords) {
+                this.#exploreCoordsRec(hit.row, hit.col, horizontalChange, new Set(), prevHitSet);
+            }
+            return;
+        }
+    };
+
+
+    #exploreCoordsRec(row, col, change, visited, prevHitSet) {
+        const rowValid = 0 <= row && row < this.board.board.length;
+        const colValid = 0 <= col && col < this.board.board[0].length;
+        if (!rowValid  || !colValid) {
+            return;
+        }
+        const key = JSON.stringify({"row": row, "col": col});
+        if (visited.has(key) || prevHitSet.has(key)) {
+            return;
+        }
+        if (this.board.board[row][col] !== this.board.hitSymbol) {
+            return;
+        }
+
+        visited.add(key);
+        this.prevHits.push({"row": row, "col": col});
+
+        const neighbors = [
+            [row + change[0].rowChange, col + change[0].colChange],
+            [row + change[1].rowChange, col + change[1].colChange],
+        ];
+
+        for (let neighbor of neighbors) {
+            const nr = neighbor[0];
+            const nc = neighbor[1];
+            this.#exploreCoordsRec(nr, nc, change, visited, prevHitSet);
+        }
     };
 };
 
