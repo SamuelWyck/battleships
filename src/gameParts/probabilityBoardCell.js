@@ -5,17 +5,17 @@ class BoardCell {
     constructor() {
         this.miss = false;
         this.hit = false;
-        this.huntWeight = 0;
+        this.weight = 0;
     };
 
 
-    increaseHuntWeight() {
-        this.huntWeight += 1;
+    increaseWeight() {
+        this.weight += 1;
     };
 
 
-    resetHuntWeight() {
-        this.huntWeight = 0;
+    resetWeight() {
+        this.weight = 0;
     };
 };
 
