@@ -87,14 +87,14 @@ header button:hover, .choice-selected {
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
-    gap: 4rem;
-    margin: 3rem 2rem 2rem 2rem;
+    gap: 2rem;
+    margin: 3rem 0;
 }
 
 .boards-div {
     display: flex;
     flex-wrap: wrap;
-    gap: 4rem;
+    gap: 2rem;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
@@ -314,7 +314,7 @@ div.board-cell-marker.miss, div.radar-cell-marker.miss {
 }
 
 .dialog {
-    position: absolute;
+    position: fixed;
     top: 20%;
     left: 0;
     right: 0;
