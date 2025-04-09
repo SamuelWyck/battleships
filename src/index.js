@@ -157,6 +157,9 @@ const game = (function() {
         if (gameOver) {
             return;
         }
+        if (manager.popup.isShowing()) {
+            return;
+        }
 
         const marker = event.target.firstChild;
         if (marker.matches(".miss") || marker.matches(".hit")) {
