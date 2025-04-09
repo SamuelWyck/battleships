@@ -61,7 +61,7 @@ class ProbabilityBoard {
         for (let row = 0; row < this.board.length; row += 1) {
             for (let col = 0; col < this.board[0].length; col += 1) {
                 const cell = this.board[row][col];
-                cell.resetHuntWeight();
+                cell.resetWeight();
             }
         }
     };
@@ -107,7 +107,7 @@ class ProbabilityBoard {
             return false;
         }
         if (currentLength === targetlength) {
-            cell.increaseHuntWeight();
+            cell.increaseWeight();
             return true;
         }
 
@@ -115,7 +115,7 @@ class ProbabilityBoard {
         const newCol = col + posChange.colChange;
         const success = this.#calcWeight(newRow, newCol, currentLength + 1, targetlength, posChange);
         if (success) {
-            cell.increaseHuntWeight();
+            cell.increaseWeight();
         }
         return success;
     };
@@ -133,7 +133,7 @@ class ProbabilityBoard {
             for (let col = 0; col < this.board[0].length; col += 1) {
                 const cell = this.board[row][col];
                 if (cell.hit) {
-                    cell.resetHuntWeight();
+                    cell.resetWeight();
                 }
             }
         }
@@ -168,7 +168,7 @@ class ProbabilityBoard {
             return false;
         }
         if (currentLength === targetlength) {
-            cell.increaseHuntWeight();
+            cell.increaseWeight();
             return true;
         }
 
@@ -176,7 +176,7 @@ class ProbabilityBoard {
         const newCol = col + posChange.colChange;
         const success = this.#calcHitWeight(newRow, newCol, currentLength + 1, targetlength, posChange);
         if (success) {
-            cell.increaseHuntWeight();
+            cell.increaseWeight();
         }
         return success;
     };
@@ -189,11 +189,11 @@ class ProbabilityBoard {
         for (let row = 0; row < this.board.length; row += 1) {
             for (let col = 0; col < this.board[0].length; col += 1) {
                 const cell = this.board[row][col];
-                if (cell.huntWeight > maxWeight) {
-                    maxWeight = cell.huntWeight;
+                if (cell.weight > maxWeight) {
+                    maxWeight = cell.weight;
                     attackList = [];
                     attackList.push({"row": row, "col": col});
-                } else if (cell.huntWeight === maxWeight) {
+                } else if (cell.weight === maxWeight) {
                     attackList.push({"row": row, "col": col});
                 }
             }
