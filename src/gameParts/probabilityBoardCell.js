@@ -6,7 +6,6 @@ class BoardCell {
         this.miss = false;
         this.hit = false;
         this.huntWeight = 0;
-        this.targetWeight = 0;
     };
 
 
@@ -15,18 +14,8 @@ class BoardCell {
     };
 
 
-    increaseTargetWeight() {
-        this.targetWeight += 1;
-    };
-
-
     resetHuntWeight() {
         this.huntWeight = 0;
-    };
-
-
-    resetTargetWeight() {
-        this.targetWeight = 0;
     };
 };
 
