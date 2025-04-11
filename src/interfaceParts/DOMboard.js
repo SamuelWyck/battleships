@@ -128,6 +128,32 @@ class BoardInterface {
         }
         return false;
     };
+
+
+    revealShips(board) {
+        const shipLocations = this.#gatherShipLocations(board);
+
+        for (let local of shipLocations) {
+            const boardCell = document.querySelector(`.${this.cellClassName}[data-row="${local.row}"][data-col="${local.col}"]`);
+            const marker = boardCell.firstChild;
+            if (!marker.matches(".hit")) {
+                marker.classList.add("reveal");
+            }
+        }
+    };
+
+
+    #gatherShipLocations(board) {
+        const coordArray = [];
+        for (let row = 0; row < board.length; row += 1) {
+            for (let col = 0; col < board[0].length; col += 1) {
+                if (typeof board[row][col] !== "number") {
+                    coordArray.push({"row": row, "col": col});
+                }
+            }
+        }
+        return coordArray;
+    };
 };
 
 
