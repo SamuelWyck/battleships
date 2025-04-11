@@ -176,6 +176,13 @@ div.board-cell-marker.miss, div.radar-cell-marker.miss {
     display: block;
 }
 
+div.board-cell-marker.reveal, div.radar-cell-marker.reveal {
+    background-color: rgb(64, 92, 255);
+    border: 2px solid rgb(58, 83, 228);
+    position: absolute;
+    display: block;
+}
+
 .ship {
     width: 50px;
     background-color: none;
