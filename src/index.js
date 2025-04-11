@@ -220,6 +220,7 @@ const game = (function() {
         if (checkGameOver(player)) {
             manager.showPopup("Computer Wins!");
             gameOver = true;
+            manager.radar.revealShips(computer.board.board);
         }
     };
 
